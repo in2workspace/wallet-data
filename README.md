@@ -16,6 +16,12 @@ Built using Java 17 and Spring WebFlux, the service operates on a reactive progr
 ### Register User
 [![](https://www.mermaidchart.com/raw/c8cba564-fdac-4fdd-93db-7e960315d1e4?version=v0.1&theme=light&format=svg)](https://www.mermaidchart.com/raw/c8cba564-fdac-4fdd-93db-7e960315d1e4?version=v0.1&theme=light&format=svg)
 
+> Note:These are two examples of how the get and delete methods work for credentials, but the other get and delete methods operate in a very similar manner. The methods for adding a new credential work the same as delete, but instead of removing it from the list, we add it to the existing list.
+### Get User Credentials
+[![](https://www.mermaidchart.com/raw/5312193f-2f6e-421b-bbde-d5ed3297b94f?version=v0.1&theme=light&format=svg)](https://www.mermaidchart.com/raw/5312193f-2f6e-421b-bbde-d5ed3297b94f?version=v0.1&theme=light&format=svg)
+
+### Delete User Credentials
+[![](https://www.mermaidchart.com/raw/3562c7aa-ee49-4ab2-b32e-e69060fdc46d?version=v0.1&theme=light&format=svg)](https://www.mermaidchart.com/raw/3562c7aa-ee49-4ab2-b32e-e69060fdc46d?version=v0.1&theme=light&format=svg)
 
 ## Getting Started
 ### Prerequisites
