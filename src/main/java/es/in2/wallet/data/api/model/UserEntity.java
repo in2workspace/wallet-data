@@ -15,7 +15,7 @@ public class UserEntity {
     private String id;  // User ID
 
     @JsonProperty("type")
-    private String type = "userEntity";
+    private String type;
 
     @JsonProperty("userData")
     private EntityAttribute<UserAttribute> userData;

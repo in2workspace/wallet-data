@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 public class EntityAttribute<T> {
     @JsonProperty("type")
-    private String type = "Property";
+    private String type;
 
     @JsonProperty("value")
     private T value;
