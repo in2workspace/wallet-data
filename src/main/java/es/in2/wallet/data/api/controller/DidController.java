@@ -8,10 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.core.publisher.Mono;
 
-@Tag(name = "DID Management", description = "Personal Data Space for DID Management API")
 @RestController
 @RequestMapping("/api/dids")
 public class DidController {
@@ -45,6 +43,7 @@ public class DidController {
             tags = {"DID Management"}
     )
     @ApiResponse(responseCode = "200", description = "List of DIDs retrieved successfully.")
+    @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<List<String>> getDidListByUserId(@RequestParam String userId){
         return orionLDService.getDidsByUserId(userId);
@@ -59,6 +58,7 @@ public class DidController {
     )
     @ApiResponse(responseCode = "200", description = "DID deleted successfully.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
+    @ApiResponse(responseCode = "404", description = "Did not found")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
 
     public Mono<Void> deleteDid(@RequestParam String did,@RequestParam String userId){

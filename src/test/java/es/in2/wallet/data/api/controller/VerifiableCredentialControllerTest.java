@@ -82,7 +82,7 @@ class VerifiableCredentialControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(credentialRequestDTO)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isCreated();
     }
 
     @Test

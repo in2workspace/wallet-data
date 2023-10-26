@@ -6,7 +6,7 @@ server:
 
 app:
   url:
-    orion-ld_context_broker: http://localhost:1026/ngsi-ld/v1/entities
+    orion-ld-adapter: http://localhost:8082
 
 
 # Logging configuration

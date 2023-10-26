@@ -33,7 +33,7 @@ class OrionLDServiceImplTest {
     @MockBean
     private ApplicationUtils applicationUtils;
 
-    @Value("${app.url.orion-ld_context_broker}")
+    @Value("${app.url.orion-ld-adapter}")
     private String contextBrokerEntitiesURL;
     
 
@@ -76,8 +76,8 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId + "/attrs"), Mockito.anyList(), Mockito.anyString());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
 
     }
     @Test
@@ -145,7 +145,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying interactions
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
     @Test
     void testGetSelectableVCsByVcTypeList() {
@@ -214,7 +214,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verify interactions
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
     @Test
     void tesDeleteVC() {
@@ -285,9 +285,8 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId + "/attrs"), Mockito.anyList(), Mockito.anyString());
-
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
     }
     @Test
     void testSaveDid() {
@@ -333,9 +332,9 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId + "/attrs"), Mockito.anyList(), Mockito.anyString());
-    }
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
+     }
     @Test
     void testGetDids() {
         String userId = "1234";
@@ -390,7 +389,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
 
 
@@ -445,9 +444,9 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId + "/attrs"), Mockito.anyList(), Mockito.anyString());
-    }
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
+      }
     @Test
     void testGetUserData() {
         String userId = "1234";
@@ -491,7 +490,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
     @Test
     void testRegisterUserInContextBroker() {
@@ -510,8 +509,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).postRequest(Mockito.eq(contextBrokerEntitiesURL), Mockito.anyList(), Mockito.anyString());
-
+        Mockito.verify(applicationUtils).postRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/publish"), Mockito.anyList(), Mockito.anyString());
     }
 
 

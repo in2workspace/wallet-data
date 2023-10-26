@@ -6,7 +6,7 @@ server:
 
 app:
   url:
-    orion-ld_context_broker: ${APP_URL_ORION-LD}
+    orion-ld-adapter: ${APP_URL_ORION-LD-ADAPTER}
 
 
 # Logging configuration

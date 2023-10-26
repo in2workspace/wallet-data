@@ -28,6 +28,7 @@ class UserControllerTest {
         UserRequestDTO userRequest = new UserRequestDTO();
         userRequest.setUserId("user123");
         userRequest.setUsername("John Doe");
+        userRequest.setEmail("jhon@example.com");
 
         Mockito.when(orionLDService.registerUserInContextBroker(userRequest)).thenReturn(Mono.empty());
 

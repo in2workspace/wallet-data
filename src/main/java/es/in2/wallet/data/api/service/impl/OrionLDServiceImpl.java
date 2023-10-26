@@ -28,12 +28,12 @@ import static es.in2.wallet.data.api.utils.ApiUtils.*;
 @Service
 public class OrionLDServiceImpl implements OrionLDService {
     private final ApplicationUtils applicationUtils;
-    private final String contextBrokerEntitiesURL;
+    private final String orionldAdapterURL;
 
     @Autowired
-    public OrionLDServiceImpl(ApplicationUtils applicationUtils, @Value("${app.url.orion-ld_context_broker}") String contextBrokerEntitiesURL) {
+    public OrionLDServiceImpl(ApplicationUtils applicationUtils, @Value("${app.url.orion-ld-adapter}") String orionldAdapterURL) {
         this.applicationUtils = applicationUtils;
-        this.contextBrokerEntitiesURL = contextBrokerEntitiesURL;
+        this.orionldAdapterURL = orionldAdapterURL;
     }
     private static final Logger log = LoggerFactory.getLogger(OrionLDServiceImpl.class);
 
@@ -379,7 +379,7 @@ public class OrionLDServiceImpl implements OrionLDService {
     // Reactive method to store UserEntity in ContextBroker
     private Mono<Void> storeUserInContextBroker(UserEntity userEntity) {
         // Building the URL for the POST request
-        String url = contextBrokerEntitiesURL;
+        String url = orionldAdapterURL + "/api/v1/publish";
 
         // Preparing request headers
         List<Map.Entry<String, String>> headers = new ArrayList<>();
@@ -404,7 +404,7 @@ public class OrionLDServiceImpl implements OrionLDService {
     // Method to get UserEntity from ContextBroker reactively
     private Mono<UserEntity> getUserEntityFromContextBroker(String userId) {
         // Building the URL for the GET request
-        String url = contextBrokerEntitiesURL + "/urn:entities:userId:" + userId;
+        String url = orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId;
 
         // Using the ApplicationUtils class to perform the GET request
         return applicationUtils.getRequest(url, new ArrayList<>())
@@ -435,7 +435,7 @@ public class OrionLDServiceImpl implements OrionLDService {
     }
 
     private Mono<Void> updateUserEntityInContextBroker(UserEntity userEntity, String userId) {
-        String url = contextBrokerEntitiesURL + "/urn:entities:userId:" + userId + "/attrs";
+        String url = orionldAdapterURL + "/api/v1/update";
 
         ObjectMapper objectMapper = new ObjectMapper();
         String requestBody;
