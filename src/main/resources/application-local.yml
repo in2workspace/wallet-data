@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: WalletData
+server:
+  port: 8086
+
+app:
+  url:
+    orion-ld_context_broker: http://localhost:1026/ngsi-ld/v1/entities
+
+
+# Logging configuration
+logging:
+  level:
+    # Set the log level for the entire application
+    root: INFO
+    # Set log level for specific packages or classes
+    es.in2.wallet.data.api.service: DEBUG
+    es.in2.wallet.data.api.utils: DEBUG
+
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health
+      base-path: /
+      path-mapping:
+        health: health
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /spring-ui
+    tags-sorter: alpha
+    operations-sorter: method
+
+openapi:
+  server:
+    url: http://localhost:8086
+    description: Spring Wallet Data API
+  info:
+    title: IN2 Wallet data project
+    version: 0.0.1
+    termsOfService: $apiUrl/terms-of-service
+    license:
+      name: MIT License
+      url: https://choosealicense.com/licenses/mit/
+    contact:
+      email: example@in2.es
+      name: IN2
+      url: https://in2.es
+    description: This API exposes endpoints to manage the IN2 Wallet data component.
