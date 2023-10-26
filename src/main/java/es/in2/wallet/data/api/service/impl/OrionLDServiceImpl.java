@@ -161,26 +161,32 @@ public class OrionLDServiceImpl implements OrionLDService {
     public Mono<Void> deleteVerifiableCredential(String id, String userId) {
         // Fetch current user entity from Context Broker
         return getUserEntityFromContextBroker(userId)
-                .map(userEntity -> {
-                    // Filter out the VC entities with the given ID
-                    List<VCAttribute> updatedVCs = userEntity.getVcs().getValue().stream()
+                .flatMap(userEntity -> {
+                    List<VCAttribute> originalVCs = userEntity.getVcs().getValue();
+                    List<VCAttribute> updatedVCs = originalVCs.stream()
                             .filter(vcAttribute -> !vcAttribute.getId().equals(id))
                             .toList();
-                    return new UserEntity(
+
+                    if (originalVCs.size() == updatedVCs.size()) {
+                        return Mono.error(new NoSuchVerifiableCredentialException("VC not found: " + id));
+                    }
+
+                    return Mono.just(new UserEntity(
                             userEntity.getId(),
                             userEntity.getType(),
                             userEntity.getUserData(),
                             userEntity.getDids(),
                             new EntityAttribute<>(userEntity.getVcs().getType(), updatedVCs)
-                    );
+                    ));
                 })
                 .flatMap(updatedUserEntity -> updateUserEntityInContextBroker(updatedUserEntity, userId))
                 .doOnSuccess(unused -> log.info("Verifiable Credential with ID: {} deleted successfully for user: {}", id, userId))
                 .onErrorResume(e -> {
                     log.error("Error while deleting Verifiable Credential for userId: " + userId, e);
-                    return Mono.error(new NoSuchVerifiableCredentialException("Error deleting Verifiable Credential for userId: " + userId));
+                    return Mono.error(e); // Re-throw the error
                 });
     }
+
 
 
     @Override
@@ -244,7 +250,10 @@ public class OrionLDServiceImpl implements OrionLDService {
                         }
                     }
                 })
-                .onErrorResume(NoSuchVerifiableCredentialException.class, Mono::error);
+                .onErrorResume(e -> {
+                    log.error("Error while getting Verifiable Credentials for userId: " + userId, e);
+                    return Mono.error(new NoSuchVerifiableCredentialException("Error while getting Verifiable Credential for userId: " + userId));
+                });
     }
 
 
@@ -273,7 +282,10 @@ public class OrionLDServiceImpl implements OrionLDService {
                     return updateUserEntityInContextBroker(updatedUserEntity, userId);
                 })
                 .doOnSuccess(aVoid -> log.info("DID saved successfully for user: {}", userId))
-                .onErrorResume(FailedCommunicationException.class, Mono::error)
+                .onErrorResume(e -> {
+                    log.error("Error while saving did for userId: " + userId, e);
+                    return Mono.error(new NoSuchUserEntity("Error while saving did for userId: " + userId));
+                })
                 .then();
     }
 
@@ -288,8 +300,10 @@ public class OrionLDServiceImpl implements OrionLDService {
                 )
                 // Log the operation result
                 .doOnSuccess(dids -> log.info("Fetched DIDs for user: {}", userId))
-                .doOnError(error -> log.error("Error fetching DIDs for user: {}", userId, error))
-                .onErrorResume(NoSuchDidException.class, Mono::error);
+                .onErrorResume(e -> {
+                    log.error("Error while getting dids for userId: " + userId, e);
+                    return Mono.error(new NoSuchUserEntity("Error while getting dids for userId: " + userId));
+                });
     }
 
     @Override
@@ -297,28 +311,35 @@ public class OrionLDServiceImpl implements OrionLDService {
         // Fetch the current user entity from the Context Broker
         return getUserEntityFromContextBroker(userId)
                 // Transform the UserEntity to remove the specific DID
-                .map(userEntity -> {
-                    List<DidAttribute> updatedDids = userEntity.getDids().getValue().stream()
+                .flatMap(userEntity -> {
+                    List<DidAttribute> originalDids = userEntity.getDids().getValue();
+                    List<DidAttribute> updatedDids = originalDids.stream()
                             .filter(didAttr -> !didAttr.getValue().equals(did))
                             .toList();
+                    if (originalDids.size() == updatedDids.size()) {
+                        return Mono.error(new NoSuchDidException("DID not found: " + did));
+                    }
 
-                    return new UserEntity(
+                    return Mono.just(new UserEntity(
                             userEntity.getId(),
                             userEntity.getType(),
                             userEntity.getUserData(),
                             new EntityAttribute<>(PROPERTY_TYPE, updatedDids),
                             userEntity.getVcs()
-                    );
+                    ));
                 })
                 // Update the user entity in the Context Broker
                 .flatMap(updatedUserEntity -> updateUserEntityInContextBroker(updatedUserEntity, userId))
                 // Log the operation result
                 .doOnSuccess(unused -> log.info("Deleted DID: {} for user: {}", did, userId))
-                .doOnError(error -> log.error("Error deleting DID: {} for user: {}", did, userId, error))
-                .onErrorResume(NoSuchDidException.class, Mono::error)
+                .onErrorResume(e -> {
+                    log.error("Error while deleting did for userId: " + userId, e);
+                    return Mono.error(e); // Re-throw the error
+                })
                 // Return a Mono<Void> to indicate the completion of the operation
                 .then();
     }
+
 
 
     @Override
@@ -329,8 +350,10 @@ public class OrionLDServiceImpl implements OrionLDService {
                 .map(UserEntity::getUserData)
                 .map(EntityAttribute::getValue)
                 .doOnSuccess(userAttribute -> log.debug("Fetched user data for userId: {}", userId))
-                .doOnError(error -> log.error("Error fetching user data for userId: " + userId, error))
-                .onErrorResume(NoSuchUserEntity.class, Mono::error);
+                .onErrorResume(e -> {
+                    log.error("Error while getting user data for userId: " + userId, e);
+                    return Mono.error(new NoSuchUserEntity("Error while getting user data for userId: " + userId));
+                });
     }
     @Override
     public Mono<Void> registerUserInContextBroker(UserRequestDTO userRequestDTO) {
@@ -347,7 +370,10 @@ public class OrionLDServiceImpl implements OrionLDService {
 
         return storeUserInContextBroker(userEntity)
                 .doOnSuccess(aVoid -> log.debug("Entity saved"))
-                .doOnError(error -> log.error("Error saving entity", error));
+                .onErrorResume(e -> {
+                    log.error("Error while registering user: " + userEntity, e);
+                    return Mono.error(new FailedCommunicationException("Error while registering user:  " + userEntity));
+                });
     }
 
     // Reactive method to store UserEntity in ContextBroker
@@ -425,7 +451,10 @@ public class OrionLDServiceImpl implements OrionLDService {
 
         return applicationUtils.patchRequest(url, headers, requestBody)
                 .then() // Ignore the response body and complete the Mono when the request is done
-                .doOnError(error -> log.error("Error while updating UserEntity in ContextBroker for userId: " + userId, error))
+                .onErrorResume(e -> {
+                    log.error("Error while updating user entity: " + userEntity, e);
+                    return Mono.error(new FailedCommunicationException("Error while updating user entity:  " + userEntity));
+                })
                 .doOnSuccess(aVoid -> log.info("UserEntity updated successfully for userId: {}", userId));
     }
 }
