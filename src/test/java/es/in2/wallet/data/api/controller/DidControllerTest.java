@@ -26,7 +26,7 @@ class DidControllerTest {
     void testSaveDid() {
         DidRequestDTO didRequestDTO = new DidRequestDTO();
         didRequestDTO.setDid("did:test:123");
-        didRequestDTO.setDidType("DID_KEY");
+        didRequestDTO.setDidType("did:key");
         didRequestDTO.setUserId("user1");
 
         Mockito.when(orionLDService.saveDid(Mockito.anyString(), Mockito.any(), Mockito.anyString()))
