@@ -32,7 +32,7 @@ public class DidController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
 
     public Mono<Void> saveDid(@RequestBody DidRequestDTO didRequestDTO){
-        return orionLDService.saveDid(didRequestDTO.getDid(), DidMethods.valueOf(didRequestDTO.getDidType()), didRequestDTO.getUserId());
+        return orionLDService.saveDid(didRequestDTO.getDid(), DidMethods.fromStringValue(didRequestDTO.getDidType()), didRequestDTO.getUserId());
     }
 
     @GetMapping
