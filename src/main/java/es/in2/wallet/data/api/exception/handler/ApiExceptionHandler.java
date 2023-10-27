@@ -53,5 +53,9 @@ public class ApiExceptionHandler {
         log.error("Validation error: {}", errors);
         return Mono.just(ResponseEntity.badRequest().body(errors));
     }
-
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Mono<ResponseEntity<Void>> unknownDidMethod(IllegalArgumentException e) {
+        log.error(e.getMessage());
+        return Mono.just(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    }
 }
