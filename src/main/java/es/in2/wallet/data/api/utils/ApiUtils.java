@@ -6,6 +6,8 @@ public final class ApiUtils {
     public static final String VC_JWT = "vc_jwt";
     public static final String VC_JSON = "vc_json";
     public static final String PROPERTY_TYPE = "Property";
+    public static final String INVALID_AUTH_HEADER = "Invalid Authorization header";
+    public static final String BEARER = "Bearer ";
 
     // Private constructor to prevent instantiation
     private ApiUtils() {}

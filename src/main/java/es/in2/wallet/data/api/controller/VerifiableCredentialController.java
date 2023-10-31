@@ -1,5 +1,9 @@
 package es.in2.wallet.data.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jwt.SignedJWT;
 import es.in2.wallet.data.api.model.CredentialRequestDTO;
 import es.in2.wallet.data.api.model.VCTypeListDTO;
 import es.in2.wallet.data.api.model.VcBasicDataDTO;
@@ -8,11 +12,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.text.ParseException;
 import java.util.List;
+
+import static es.in2.wallet.data.api.utils.ApiUtils.*;
 
 @RestController
 @RequestMapping("/api/credentials")
@@ -35,9 +43,17 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "200", description = "Verifiable credential retrieved successfully.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<List<VcBasicDataDTO>> getVerifiableCredentialList(@RequestParam String userId){
+    public Mono<List<VcBasicDataDTO>> getVerifiableCredentialList(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) throws JsonProcessingException, ParseException {
         log.debug("VerifiableCredentialController.getVerifiableCredential()");
-        return orionLDService.getUserVCsInJson(userId);
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+            String token = authorizationHeader.substring(7);
+            SignedJWT parsedVcJwt = SignedJWT.parse(token);
+            JsonNode jsonObject = new ObjectMapper().readTree(parsedVcJwt.getPayload().toString());
+            String userId = jsonObject.get("sub").asText();
+            return orionLDService.getUserVCsInJson(userId);
+        } else {
+            return Mono.error(new IllegalArgumentException(INVALID_AUTH_HEADER));
+        }
     }
 
     @DeleteMapping
@@ -51,9 +67,17 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "Verifiable credential not found")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<Void> deleteVerifiableCredential(@RequestParam String credentialId,@RequestParam String userId){
+    public Mono<Void> deleteVerifiableCredential(@RequestParam String credentialId,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) throws JsonProcessingException, ParseException {
         log.debug("VerifiableCredentialController.deleteVerifiableCredential()");
-        return orionLDService.deleteVerifiableCredential(credentialId,userId);
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+            String token = authorizationHeader.substring(7);
+            SignedJWT parsedVcJwt = SignedJWT.parse(token);
+            JsonNode jsonObject = new ObjectMapper().readTree(parsedVcJwt.getPayload().toString());
+            String userId = jsonObject.get("sub").asText();
+            return orionLDService.deleteVerifiableCredential(credentialId,userId);
+        } else {
+            return Mono.error(new IllegalArgumentException(INVALID_AUTH_HEADER));
+        }
     }
 
     @PostMapping
@@ -66,9 +90,17 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "201", description = "Verifiable credential saved successfully.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<Void> saveVerifiableCredential(@RequestBody CredentialRequestDTO credentialRequestDTO){
+    public Mono<Void> saveVerifiableCredential(@RequestBody CredentialRequestDTO credentialRequestDTO,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) throws JsonProcessingException, ParseException {
         log.debug("VerifiableCredentialController.saveVerifiableCredential()");
-        return orionLDService.saveVC(credentialRequestDTO.getCredential(), credentialRequestDTO.getUserId());
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+            String token = authorizationHeader.substring(7);
+            SignedJWT parsedVcJwt = SignedJWT.parse(token);
+            JsonNode jsonObject = new ObjectMapper().readTree(parsedVcJwt.getPayload().toString());
+            String userId = jsonObject.get("sub").asText();
+            return orionLDService.saveVC(credentialRequestDTO.getCredential(), userId);
+        } else {
+            return Mono.error(new IllegalArgumentException(INVALID_AUTH_HEADER));
+        }
     }
     @PostMapping("/types")
     @ResponseStatus(HttpStatus.OK)
@@ -81,8 +113,17 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "Verifiable credential don't match with the specified types")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<List<VcBasicDataDTO>> getSelectableVCs(@RequestBody VCTypeListDTO vcTypeListDTO){
+    public Mono<List<VcBasicDataDTO>> getSelectableVCs(@RequestBody VCTypeListDTO vcTypeListDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) throws ParseException, JsonProcessingException {
         log.debug("VerifiableCredentialController.getVerifiableCredential()");
-        return orionLDService.getSelectableVCsByVcTypeList(vcTypeListDTO.getVcTypes(), vcTypeListDTO.getUserId());
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+            String token = authorizationHeader.substring(7);
+            SignedJWT parsedVcJwt = SignedJWT.parse(token);
+            JsonNode jsonObject = new ObjectMapper().readTree(parsedVcJwt.getPayload().toString());
+            String userId = jsonObject.get("sub").asText();
+            return orionLDService.getSelectableVCsByVcTypeList(vcTypeListDTO.getVcTypes(), userId);
+
+        } else {
+            return Mono.error(new IllegalArgumentException(INVALID_AUTH_HEADER));
+        }
     }
 }

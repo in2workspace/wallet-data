@@ -9,8 +9,6 @@ import java.util.List;
 @Getter
 @Setter
 public class VCTypeListDTO {
-    @JsonProperty("userId")
-    private String userId;
     @JsonProperty("vcTypes")
     private List<String> vcTypes;
 }

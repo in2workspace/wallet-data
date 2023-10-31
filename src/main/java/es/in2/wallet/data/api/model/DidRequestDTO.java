@@ -11,7 +11,4 @@ public class DidRequestDTO {
     private String did;
     @JsonProperty("didType")
     private String didType;
-    @JsonProperty("userId")
-    private String userId;
-
 }
