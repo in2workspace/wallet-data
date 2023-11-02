@@ -45,7 +45,7 @@ class OrionLDServiceImplTest {
 
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
         String jsonResponse = """
-                { "id": "urn:entities:userId:123456", "type": "userEntity", "dids": {
+                { "id": "urn:entities:userId:1234", "type": "userEntity", "dids": {
                             "type": "Property",
                             "value": []
                         },
@@ -292,7 +292,7 @@ class OrionLDServiceImplTest {
     void testSaveDid() {
         // Sample JWT token for a verifiable credential
         String did = "did:key:1234";
-        String didType = "DID_KEY";
+        String didType = "KEY";
         String userId = "1234";
 
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
@@ -348,11 +348,11 @@ class OrionLDServiceImplTest {
                         "type": "Property",
                         "value": [
                             {
-                                "type": "did_key",
+                                "type": "key",
                                 "value": "did:key:123456"
                             },
                             {
-                                "type": "did_key",
+                                "type": "key",
                                 "value": "did:key:654321"
                             }
                         ]
@@ -407,11 +407,11 @@ class OrionLDServiceImplTest {
                         "type": "Property",
                         "value": [
                             {
-                                "type": "did_key",
+                                "type": "key",
                                 "value": "did:key:123456"
                             },
                             {
-                                "type": "did_key",
+                                "type": "key",
                                 "value": "did:key:654321"
                             }
                         ]

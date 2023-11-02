@@ -27,7 +27,7 @@ class UserControllerTest {
     @Test
     void testRegisterUser() {
         UserRequestDTO userRequest = new UserRequestDTO();
-        userRequest.setUserId("user123");
+        userRequest.setUserId("123");
         userRequest.setUsername("John Doe");
         userRequest.setEmail("jhon@example.com");
 
