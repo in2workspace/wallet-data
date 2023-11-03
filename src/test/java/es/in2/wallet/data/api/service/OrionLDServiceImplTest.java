@@ -6,14 +6,14 @@ import es.in2.wallet.data.api.model.VcBasicDataDTO;
 import es.in2.wallet.data.api.service.impl.OrionLDServiceImpl;
 import es.in2.wallet.data.api.utils.ApplicationUtils;
 import es.in2.wallet.data.api.utils.DidMethods;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -27,14 +27,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @Import({ApplicationUtils.class})
 class OrionLDServiceImplTest {
 
-    @Autowired
     private OrionLDServiceImpl orionLDService;
 
     @MockBean
     private ApplicationUtils applicationUtils;
 
-    @Value("${app.url.orion-ld-adapter}")
-    private String contextBrokerEntitiesURL;
+    private String orionldAdapterURL;
+
+    @BeforeEach
+    void setUp() {
+        orionldAdapterURL = "http://localhost:8082";
+        orionLDService = new OrionLDServiceImpl(applicationUtils);
+        ReflectionTestUtils.setField(orionLDService, "orionldAdapterURL", orionldAdapterURL);
+    }
     
 
     @Test
@@ -76,8 +81,8 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
 
     }
     @Test
@@ -145,7 +150,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying interactions
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
     @Test
     void testGetSelectableVCsByVcTypeList() {
@@ -214,7 +219,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verify interactions
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
     @Test
     void tesDeleteVC() {
@@ -285,8 +290,8 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
     }
     @Test
     void testSaveDid() {
@@ -332,8 +337,8 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
      }
     @Test
     void testGetDids() {
@@ -389,7 +394,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
 
 
@@ -444,8 +449,8 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
       }
     @Test
     void testGetUserData() {
@@ -490,7 +495,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
+        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
     @Test
     void testRegisterUserInContextBroker() {
@@ -509,7 +514,7 @@ class OrionLDServiceImplTest {
                 .verify();
 
         // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).postRequest(Mockito.eq(contextBrokerEntitiesURL + "/api/v1/publish"), Mockito.anyList(), Mockito.anyString());
+        Mockito.verify(applicationUtils).postRequest(Mockito.eq(orionldAdapterURL + "/api/v1/publish"), Mockito.anyList(), Mockito.anyString());
     }
 
 

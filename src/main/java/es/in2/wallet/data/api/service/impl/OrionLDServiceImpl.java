@@ -9,9 +9,8 @@ import es.in2.wallet.data.api.model.*;
 import es.in2.wallet.data.api.service.OrionLDService;
 import es.in2.wallet.data.api.utils.ApplicationUtils;
 import es.in2.wallet.data.api.utils.DidMethods;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,23 +18,19 @@ import com.nimbusds.jwt.SignedJWT;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 import java.text.ParseException;
 import java.util.*;
 
 import static es.in2.wallet.data.api.utils.ApiUtils.*;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class OrionLDServiceImpl implements OrionLDService {
     private final ApplicationUtils applicationUtils;
-    private final String orionldAdapterURL;
+    @Value("${app.url.orion-ld-adapter}")
+    private String orionldAdapterURL;
 
-    @Autowired
-    public OrionLDServiceImpl(ApplicationUtils applicationUtils, @Value("${app.url.orion-ld-adapter}") String orionldAdapterURL) {
-        this.applicationUtils = applicationUtils;
-        this.orionldAdapterURL = orionldAdapterURL;
-    }
-    private static final Logger log = LoggerFactory.getLogger(OrionLDServiceImpl.class);
 
     @Override
     public Mono<Void> saveVC(String vcJwt, String userId) {

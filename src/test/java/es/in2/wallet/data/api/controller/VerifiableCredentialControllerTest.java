@@ -4,9 +4,9 @@ import es.in2.wallet.data.api.model.CredentialRequestDTO;
 import es.in2.wallet.data.api.model.VCTypeListDTO;
 import es.in2.wallet.data.api.model.VcBasicDataDTO;
 import es.in2.wallet.data.api.service.OrionLDService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -19,11 +19,17 @@ import java.util.List;
 @WebFluxTest(VerifiableCredentialController.class)
 class VerifiableCredentialControllerTest {
 
-    @Autowired
-    private WebTestClient webTestClient;
+    private WebTestClient webClient;
 
     @MockBean
     private OrionLDService orionLDService;
+
+    @BeforeEach
+    void setUp() {
+        webClient = WebTestClient.bindToController(new VerifiableCredentialController(orionLDService))
+                .configureClient()
+                .build();
+    }
 
     @Test
     void testGetVerifiableCredentialList() {
@@ -36,7 +42,7 @@ class VerifiableCredentialControllerTest {
         Mockito.when(orionLDService.getUserVCsInJson("aeb5f849-3909-48d3-9702-a78367ba24f5"))
                 .thenReturn(Mono.just(credentials));
 
-        webTestClient.get()
+        webClient.get()
                 .uri("/api/credentials")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .exchange()
@@ -61,7 +67,7 @@ class VerifiableCredentialControllerTest {
         Mockito.when(orionLDService.deleteVerifiableCredential(credentialId, "aeb5f849-3909-48d3-9702-a78367ba24f5"))
                 .thenReturn(Mono.empty());
 
-        webTestClient.delete()
+        webClient.delete()
                 .uri(uriBuilder -> uriBuilder.path("/api/credentials")
                         .queryParam("credentialId", credentialId)
                         .build())
@@ -79,7 +85,7 @@ class VerifiableCredentialControllerTest {
         Mockito.when(orionLDService.saveVC("someCredential", "aeb5f849-3909-48d3-9702-a78367ba24f5"))
                 .thenReturn(Mono.empty());
 
-        webTestClient.post()
+        webClient.post()
                 .uri("/api/credentials")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -103,7 +109,7 @@ class VerifiableCredentialControllerTest {
         Mockito.when(orionLDService.getSelectableVCsByVcTypeList(typeList,"aeb5f849-3909-48d3-9702-a78367ba24f5"))
                 .thenReturn(Mono.just(credentials));
 
-        webTestClient.post()
+        webClient.post()
                 .uri("/api/credentials/types")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)

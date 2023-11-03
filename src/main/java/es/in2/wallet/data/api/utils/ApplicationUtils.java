@@ -1,8 +1,6 @@
 package es.in2.wallet.data.api.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,12 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class ApplicationUtils {
-
-    private static final Logger log = LoggerFactory.getLogger(ApplicationUtils.class);
     private final WebClient webClient;
 
-    @Autowired
     public ApplicationUtils(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
     }

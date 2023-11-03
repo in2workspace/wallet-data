@@ -7,10 +7,10 @@ import com.nimbusds.jwt.SignedJWT;
 import es.in2.wallet.data.api.model.DidRequestDTO;
 import es.in2.wallet.data.api.service.OrionLDService;
 import es.in2.wallet.data.api.utils.DidMethods;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.text.ParseException;
 import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,13 +20,11 @@ import static es.in2.wallet.data.api.utils.ApiUtils.*;
 
 @RestController
 @RequestMapping("/api/dids")
+@RequiredArgsConstructor
 public class DidController {
 
     private final OrionLDService orionLDService;
 
-    public DidController(OrionLDService orionLDService) {
-        this.orionLDService = orionLDService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

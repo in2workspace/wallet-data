@@ -3,9 +3,9 @@ package es.in2.wallet.data.api.controller;
 import es.in2.wallet.data.api.model.UserAttribute;
 import es.in2.wallet.data.api.model.UserRequestDTO;
 import es.in2.wallet.data.api.service.OrionLDService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -18,12 +18,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebFluxTest(UserController.class)
 class UserControllerTest {
 
-    @Autowired
     private WebTestClient webClient;
 
     @MockBean
     private OrionLDService orionLDService;
 
+    @BeforeEach
+    void setUp() {
+        webClient = WebTestClient.bindToController(new UserController(orionLDService))
+                .configureClient()
+                .build();
+    }
     @Test
     void testRegisterUser() {
         UserRequestDTO userRequest = new UserRequestDTO();

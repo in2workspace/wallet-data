@@ -10,8 +10,8 @@ import es.in2.wallet.data.api.service.OrionLDService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,13 +24,10 @@ import static es.in2.wallet.data.api.utils.ApiUtils.INVALID_AUTH_HEADER;
 
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
+@RequiredArgsConstructor
 public class UserController {
     private final OrionLDService orionLDService;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
-    public UserController(OrionLDService orionLDService) {
-        this.orionLDService = orionLDService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
