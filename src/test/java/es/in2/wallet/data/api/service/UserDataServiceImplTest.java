@@ -1,20 +1,13 @@
 package es.in2.wallet.data.api.service;
 
-import es.in2.wallet.data.api.model.UserAttribute;
-import es.in2.wallet.data.api.model.UserRequestDTO;
-import es.in2.wallet.data.api.model.VcBasicDataDTO;
-import es.in2.wallet.data.api.service.impl.OrionLDServiceImpl;
-import es.in2.wallet.data.api.utils.ApplicationUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import es.in2.wallet.data.api.model.*;
+import es.in2.wallet.data.api.service.impl.UserDataServiceImpl;
 import es.in2.wallet.data.api.utils.DidMethods;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.util.ReflectionTestUtils;
-import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Arrays;
@@ -23,33 +16,26 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@WebFluxTest(OrionLDServiceImpl.class)
-@Import({ApplicationUtils.class})
-class OrionLDServiceImplTest {
+@WebFluxTest(UserDataServiceImpl.class)
+class UserDataServiceImplTest {
 
-    private OrionLDServiceImpl orionLDService;
+    private UserDataServiceImpl userDataServiceImpl;
+    private ObjectMapper objectMapper;
 
-    @MockBean
-    private ApplicationUtils applicationUtils;
-
-    private String orionldAdapterURL;
 
     @BeforeEach
     void setUp() {
-        orionldAdapterURL = "http://localhost:8082";
-        orionLDService = new OrionLDServiceImpl(applicationUtils);
-        ReflectionTestUtils.setField(orionLDService, "orionldAdapterURL", orionldAdapterURL);
+        userDataServiceImpl = new UserDataServiceImpl();
+        objectMapper = new ObjectMapper();
     }
     
 
     @Test
-    void testSaveVC() {
+    void testSaveVC() throws JsonProcessingException {
         // Sample JWT token for a verifiable credential
         String vcJwt = "eyJraWQiOiJkaWQ6a2V5OnpRM3NodGNFUVAzeXV4YmtaMVNqTjUxVDhmUW1SeVhuanJYbThFODRXTFhLRFFiUm4jelEzc2h0Y0VRUDN5dXhia1oxU2pONTFUOGZRbVJ5WG5qclhtOEU4NFdMWEtEUWJSbiIsInR5cCI6IkpXVCIsImFsZyI6IkVTMjU2SyJ9.eyJzdWIiOiJkaWQ6a2V5OnpEbmFlZnk3amhwY0ZCanp0TXJFSktFVHdFU0NoUXd4cEpuVUpLb3ZzWUQ1ZkpabXAiLCJuYmYiOjE2OTgxMzQ4NTUsImlzcyI6ImRpZDprZXk6elEzc2h0Y0VRUDN5dXhia1oxU2pONTFUOGZRbVJ5WG5qclhtOEU4NFdMWEtEUWJSbiIsImV4cCI6MTcwMDcyNjg1NSwiaWF0IjoxNjk4MTM0ODU1LCJ2YyI6eyJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiTEVBUkNyZWRlbnRpYWwiXSwiQGNvbnRleHQiOlsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCJodHRwczovL2RvbWUtbWFya2V0cGxhY2UuZXUvLzIwMjIvY3JlZGVudGlhbHMvbGVhcmNyZWRlbnRpYWwvdjEiXSwiaWQiOiJ1cm46dXVpZDo4NzAwYmVlNS00NjIxLTQ3MjAtOTRkZS1lODY2ZmI3MTk3ZTkiLCJpc3N1ZXIiOnsiaWQiOiJkaWQ6a2V5OnpRM3NodGNFUVAzeXV4YmtaMVNqTjUxVDhmUW1SeVhuanJYbThFODRXTFhLRFFiUm4ifSwiaXNzdWFuY2VEYXRlIjoiMjAyMy0xMC0yNFQwODowNzozNVoiLCJpc3N1ZWQiOiIyMDIzLTEwLTI0VDA4OjA3OjM1WiIsInZhbGlkRnJvbSI6IjIwMjMtMTAtMjRUMDg6MDc6MzVaIiwiZXhwaXJhdGlvbkRhdGUiOiIyMDIzLTExLTIzVDA4OjA3OjM1WiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6RG5hZWZ5N2pocGNGQmp6dE1yRUpLRVR3RVNDaFF3eHBKblVKS292c1lENWZKWm1wIiwidGl0bGUiOiJNci4iLCJmaXJzdF9uYW1lIjoiSm9obiIsImxhc3RfbmFtZSI6IkRvZSIsImdlbmRlciI6Ik0iLCJwb3N0YWxfYWRkcmVzcyI6IiIsImVtYWlsIjoiam9obmRvZUBnb29kYWlyLmNvbSIsInRlbGVwaG9uZSI6IiIsImZheCI6IiIsIm1vYmlsZV9waG9uZSI6IiszNDc4NzQyNjYyMyIsImxlZ2FsUmVwcmVzZW50YXRpdmUiOnsiY24iOiI1NjU2NTY1NlYgSmVzdXMgUnVpeiIsInNlcmlhbE51bWJlciI6IjU2NTY1NjU2ViIsIm9yZ2FuaXphdGlvbklkZW50aWZpZXIiOiJWQVRFUy0xMjM0NTY3OCIsIm8iOiJHb29kQWlyIiwiYyI6IkVTIn0sInJvbGVzQW5kRHV0aWVzIjpbeyJ0eXBlIjoiTEVBUkNyZWRlbnRpYWwiLCJpZCI6Imh0dHBzOi8vZG9tZS1tYXJrZXRwbGFjZS5ldS8vbGVhci92MS82NDg0OTk0bjRyOWU5OTA0OTQifV0sImtleSI6InZhbHVlIn19LCJqdGkiOiJ1cm46dXVpZDo4NzAwYmVlNS00NjIxLTQ3MjAtOTRkZS1lODY2ZmI3MTk3ZTkifQ.2_YNY515CaohirD4AHDBMvzDagEn-p8uAsaiMT0H4ltK2uVfG8IWWqV_OOR6lFlXMzUhJd7nKsaWkhnAQY8kyA";
-        String userId = "1234";
-
-        // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
-        String jsonResponse = """
+        // Sample JSON response entity
+        String userEntityJson = """
                 { "id": "urn:entities:userId:1234", "type": "userEntity", "dids": {
                             "type": "Property",
                             "value": []
@@ -65,44 +51,29 @@ class OrionLDServiceImplTest {
                             "type": "Property",
                             "value": []
                         }}""";
-
-
-        // When applicationUtils.getRequest() is called with any String and any List, return a Mono with the jsonResponse
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(jsonResponse));
-
-        // When applicationUtils.patchRequest() is called with any String, any List, and any String, return an empty Mono
-        Mockito.when(applicationUtils.patchRequest(Mockito.anyString(), Mockito.anyList(), Mockito.anyString()))
-                .thenReturn(Mono.empty());
-
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
         // Executing the method under test
-        StepVerifier.create(orionLDService.saveVC(vcJwt, userId))
+        StepVerifier.create(userDataServiceImpl.saveVC(userEntity, vcJwt))
+                .expectNextMatches(userEntityResult -> userEntityResult.getVcs() != null && userEntityResult.getVcs().getValue().size() == 2)
                 .expectComplete()
                 .verify();
-
-        // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
-
     }
     @Test
-    void testGetUserVCsInJson(){
-        String userId = "1234";
-        // Sample user entity JSON response
+    void testGetUserVCsInJson() throws JsonProcessingException {
         String userEntityJson = """
             {
                 "id": "urn:entities:userId:1234",
                 "type": "userEntity",
-                "dids": {
-                    "type": "Property",
-                    "value": []
-                },
                 "userData": {
                     "type": "Property",
                     "value": {
                         "username": "John Doe",
                         "email": "john@gmail.com"
                     }
+                },
+                "dids": {
+                    "type": "Property",
+                    "value": []
                 },
                 "vcs": {
                     "type": "Property",
@@ -128,15 +99,14 @@ class OrionLDServiceImplTest {
                                 }
                             }
                         }
-                        
                     ]
                 }
             }
         """;
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(userEntityJson));
+
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
         // Executing the method under test
-        StepVerifier.create(orionLDService.getUserVCsInJson(userId))
+        StepVerifier.create(userDataServiceImpl.getUserVCsInJson(userEntity))
                 .assertNext(vcBasicDataDTOList -> {
                     assertFalse(vcBasicDataDTOList.isEmpty(), "The VC list should not be empty");
 
@@ -149,13 +119,10 @@ class OrionLDServiceImplTest {
                 .expectComplete()
                 .verify();
 
-        // Verifying interactions
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-    }
+        }
     @Test
-    void testGetSelectableVCsByVcTypeList() {
+    void testGetSelectableVCsByVcTypeList() throws JsonProcessingException {
         // Arrange
-        String userId = "1234";
         List<String> vcTypeList = Arrays.asList("VerifiableCredential", "LEARCredential");
         String userEntityJson = """
             {
@@ -198,15 +165,14 @@ class OrionLDServiceImplTest {
                                 "id": "1234"
                             }
                         }
-                        
+
                     ]
                 }
             }
         """;
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(userEntityJson));
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
         // Act and Assert
-        StepVerifier.create(orionLDService.getSelectableVCsByVcTypeList(vcTypeList, userId))
+        StepVerifier.create(userDataServiceImpl.getSelectableVCsByVcTypeList(vcTypeList, userEntity))
                 .assertNext(vcBasicDataDTOList -> {
                     // Assertions for vcBasicDataDTOList
                     // Adjust according to your expectations
@@ -218,14 +184,11 @@ class OrionLDServiceImplTest {
                 .expectComplete()
                 .verify();
 
-        // Verify interactions
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-    }
+        }
     @Test
-    void tesDeleteVC() {
+    void tesDeleteVC() throws JsonProcessingException {
         // Sample JWT token for a verifiable credential
         String vcID = "vc2";
-        String userId = "1234";
 
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
         String userEntityJson = """
@@ -269,39 +232,30 @@ class OrionLDServiceImplTest {
                                 "id": "vc2"
                             }
                         }
-                        
+
                     ]
                 }
             }
         """;
-
-
-        // When applicationUtils.getRequest() is called with any String and any List, return a Mono with the jsonResponse
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(userEntityJson));
-
-        // When applicationUtils.patchRequest() is called with any String, any List, and any String, return an empty Mono
-        Mockito.when(applicationUtils.patchRequest(Mockito.anyString(), Mockito.anyList(), Mockito.anyString()))
-                .thenReturn(Mono.empty());
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
 
         // Executing the method under test
-        StepVerifier.create(orionLDService.deleteVerifiableCredential(vcID,userId))
+        StepVerifier.create(userDataServiceImpl.deleteVerifiableCredential(userEntity,vcID))
+                .assertNext(userEntity1 -> assertFalse(
+                        userEntity1.getVcs().getValue().stream().anyMatch(vcAttribute -> vcAttribute.getId().equals(vcID)),
+                        "The VC with id " + vcID + " should be deleted"
+                ))
                 .expectComplete()
                 .verify();
-
-        // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
     }
     @Test
-    void testSaveDid() {
+    void testSaveDid() throws JsonProcessingException {
         // Sample JWT token for a verifiable credential
         String did = "did:key:1234";
         String didType = "KEY";
-        String userId = "1234";
 
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
-        String jsonResponse = """
+        String userEntityJson = """
                 {
                     "id": "urn:entities:userId:1234",
                     "type": "userEntity",
@@ -321,31 +275,17 @@ class OrionLDServiceImplTest {
                         "value": []
                     }
                 }""";
-
-
-        // When applicationUtils.getRequest() is called with any String and any List, return a Mono with the jsonResponse
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(jsonResponse));
-
-        // When applicationUtils.patchRequest() is called with any String, any List, and any String, return an empty Mono
-        Mockito.when(applicationUtils.patchRequest(Mockito.anyString(), Mockito.anyList(), Mockito.anyString()))
-                .thenReturn(Mono.empty());
-
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
         // Executing the method under test
-        StepVerifier.create(orionLDService.saveDid(did,DidMethods.valueOf(didType),userId))
+        StepVerifier.create(userDataServiceImpl.saveDid(userEntity,did, DidMethods.valueOf(didType)))
+                .expectNextMatches(userEntityResult -> userEntityResult.getDids() != null && userEntityResult.getDids().getValue().size() == 1)
                 .expectComplete()
                 .verify();
-
-        // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
      }
     @Test
-    void testGetDids() {
-        String userId = "1234";
-
+    void testGetDids() throws JsonProcessingException {
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
-        String jsonResponse = """
+        String userEntityJson = """
                 {
                     "id": "urn:entities:userId:1234",
                     "type": "userEntity",
@@ -375,16 +315,12 @@ class OrionLDServiceImplTest {
                     }
                 }""";
 
-
-        // When applicationUtils.getRequest() is called with any String and any List, return a Mono with the jsonResponse
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(jsonResponse));
-
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
         // List of expected DIDs
         List<String> expectedDids = List.of("did:key:123456", "did:key:654321");
 
         // Executing the method under test
-        StepVerifier.create(orionLDService.getDidsByUserId(userId))
+        StepVerifier.create(userDataServiceImpl.getDidsByUserEntity(userEntity))
                 .assertNext(retrievedDids -> {
                     assertNotNull(retrievedDids, "DIDs list should not be null");
                     assertEquals(expectedDids.size(), retrievedDids.size(), "DIDs list size mismatch");
@@ -392,19 +328,15 @@ class OrionLDServiceImplTest {
                 })
                 .expectComplete()
                 .verify();
-
-        // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
 
 
     @Test
-    void testDeleteDids() {
-        String userId = "1234";
+    void testDeleteDids() throws JsonProcessingException {
         String did = "did:key:654321";
 
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
-        String jsonResponse = """
+        String userEntityJson = """
                 {
                     "id": "urn:entities:userId:1234",
                     "type": "userEntity",
@@ -434,31 +366,24 @@ class OrionLDServiceImplTest {
                     }
                 }""";
 
-
-        // When applicationUtils.getRequest() is called with any String and any List, return a Mono with the jsonResponse
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(jsonResponse));
-
-        // When applicationUtils.patchRequest() is called with any String, any List, and any String, return an empty Mono
-        Mockito.when(applicationUtils.patchRequest(Mockito.anyString(), Mockito.anyList(), Mockito.anyString()))
-                .thenReturn(Mono.empty());
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
 
         // Executing the method under test
-        StepVerifier.create(orionLDService.deleteSelectedDid(did,userId))
+        StepVerifier.create(userDataServiceImpl.deleteSelectedDidFromUserEntity(did,userEntity))
+                .assertNext(userEntity1 -> assertFalse(
+                        userEntity1.getDids().getValue().stream().anyMatch(didAttribute -> didAttribute.getValue().equals(did)),
+                        "The did with value " + did + " should be deleted"
+                ))
                 .expectComplete()
                 .verify();
 
-        // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
-        Mockito.verify(applicationUtils).patchRequest(Mockito.eq(orionldAdapterURL + "/api/v1/update"), Mockito.anyList(), Mockito.anyString());
       }
     @Test
-    void testGetUserData() {
-        String userId = "1234";
+    void testGetUserData() throws JsonProcessingException {
         UserAttribute expectedUserData = new UserAttribute("Manuel", "manuel@gmail.com");
 
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
-        String jsonResponse = """
+        String userEntityJson = """
                 {
                     "id": "urn:entities:userId:123456",
                     "type": "userEntity",
@@ -479,13 +404,9 @@ class OrionLDServiceImplTest {
                     }
                 }""";
 
-
-        // When applicationUtils.getRequest() is called with any String and any List, return a Mono with the jsonResponse
-        Mockito.when(applicationUtils.getRequest(Mockito.anyString(), Mockito.anyList()))
-                .thenReturn(Mono.just(jsonResponse));
-
+        UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
         // Executing the method under test
-        StepVerifier.create(orionLDService.getUserDataByUserId(userId))
+        StepVerifier.create(userDataServiceImpl.getUserDataFromUserEntity(userEntity))
                 .assertNext(retrievedUserData -> {
                     assertNotNull(retrievedUserData, "User data should not be null");
                     assertEquals(expectedUserData.getUsername(), retrievedUserData.getUsername(), "Username mismatch");
@@ -493,9 +414,6 @@ class OrionLDServiceImplTest {
                 })
                 .expectComplete()
                 .verify();
-
-        // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).getRequest(Mockito.eq(orionldAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId), Mockito.anyList());
     }
     @Test
     void testRegisterUserInContextBroker() {
@@ -504,17 +422,14 @@ class OrionLDServiceImplTest {
         userRequestDTO.setUsername("Manuel");
         userRequestDTO.setEmail("manuel@gmail.com");
 
-        // When applicationUtils.postRequest() is called with expectedUrl, any List, and jsonRequestBody, return a Mono<Void>
-        Mockito.when(applicationUtils.postRequest(Mockito.anyString(), Mockito.anyList(), Mockito.anyString()))
-                .thenReturn(Mono.empty());
-
         // Executing the method under test
-        StepVerifier.create(orionLDService.registerUserInContextBroker(userRequestDTO))
+        StepVerifier.create(userDataServiceImpl.createUserEntity(userRequestDTO))
+                .assertNext(userEntity -> {
+                    assertNotNull(userEntity, "User Entity should not be null");
+                    assertEquals(userEntity.getUserData().getValue().getUsername(), userRequestDTO.getUsername(), "User name mismatch");
+                })
                 .expectComplete()
                 .verify();
-
-        // Verifying the interactions with the mocks and ensuring that the expected behaviors occurred
-        Mockito.verify(applicationUtils).postRequest(Mockito.eq(orionldAdapterURL + "/api/v1/publish"), Mockito.anyList(), Mockito.anyString());
     }
 
 

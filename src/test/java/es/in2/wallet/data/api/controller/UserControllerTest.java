@@ -2,7 +2,7 @@ package es.in2.wallet.data.api.controller;
 
 import es.in2.wallet.data.api.model.UserAttribute;
 import es.in2.wallet.data.api.model.UserRequestDTO;
-import es.in2.wallet.data.api.service.OrionLDService;
+import es.in2.wallet.data.api.service.UserDataFacadeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,11 +21,11 @@ class UserControllerTest {
     private WebTestClient webClient;
 
     @MockBean
-    private OrionLDService orionLDService;
+    private UserDataFacadeService userDataFacadeService;
 
     @BeforeEach
     void setUp() {
-        webClient = WebTestClient.bindToController(new UserController(orionLDService))
+        webClient = WebTestClient.bindToController(new UserController(userDataFacadeService))
                 .configureClient()
                 .build();
     }
@@ -36,7 +36,7 @@ class UserControllerTest {
         userRequest.setUsername("John Doe");
         userRequest.setEmail("jhon@example.com");
 
-        Mockito.when(orionLDService.registerUserInContextBroker(userRequest)).thenReturn(Mono.empty());
+        Mockito.when(userDataFacadeService.createUserEntity(userRequest)).thenReturn(Mono.empty());
 
         webClient.post()
                 .uri("/api/users")
@@ -54,7 +54,7 @@ class UserControllerTest {
         expectedUserAttribute.setUsername("John Doe");
         expectedUserAttribute.setEmail("john@example.com");
 
-        Mockito.when(orionLDService.getUserDataByUserId("aeb5f849-3909-48d3-9702-a78367ba24f5")).thenReturn(Mono.just(expectedUserAttribute));
+        Mockito.when(userDataFacadeService.getUserDataByUserId("aeb5f849-3909-48d3-9702-a78367ba24f5")).thenReturn(Mono.just(expectedUserAttribute));
 
         webClient.get()
                 .uri("/api/users")

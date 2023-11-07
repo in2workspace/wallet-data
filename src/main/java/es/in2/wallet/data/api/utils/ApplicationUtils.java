@@ -1,12 +1,21 @@
 package es.in2.wallet.data.api.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+
+import static es.in2.wallet.data.api.utils.ApiUtils.BEARER;
+import static es.in2.wallet.data.api.utils.ApiUtils.INVALID_AUTH_HEADER;
 
 @Component
 @Slf4j
@@ -60,5 +69,20 @@ public class ApplicationUtils {
         log.debug(">>> BODY: {}", requestBody);
         log.debug("<<< BODY: {}", responseBody);
         log.debug("********************************************************************************");
+    }
+    public static Mono<String> getUserIdFromToken(String authorizationHeader) {
+        return Mono.just(authorizationHeader)
+                .filter(header -> header.startsWith(BEARER))
+                .map(header -> header.substring(7))
+                .flatMap(token -> {
+                    try {
+                        SignedJWT parsedVcJwt = SignedJWT.parse(token);
+                        JsonNode jsonObject = new ObjectMapper().readTree(parsedVcJwt.getPayload().toString());
+                        return Mono.just(jsonObject.get("sub").asText());
+                    } catch (ParseException | JsonProcessingException e) {
+                        return Mono.error(e);
+                    }
+                })
+                .switchIfEmpty(Mono.error(new IllegalArgumentException(INVALID_AUTH_HEADER)));
     }
 }
