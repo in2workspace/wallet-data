@@ -2,25 +2,24 @@ package es.in2.wallet.data.api.controller;
 
 import es.in2.wallet.data.api.model.UserAttribute;
 import es.in2.wallet.data.api.model.UserRequestDTO;
-import es.in2.wallet.data.api.service.OrionLDService;
+import es.in2.wallet.data.api.service.UserDataFacadeService;
+import es.in2.wallet.data.api.utils.ApplicationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    private final OrionLDService orionLDService;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
-    public UserController(OrionLDService orionLDService) {
-        this.orionLDService = orionLDService;
-    }
+    private final UserDataFacadeService userDataFacadeService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -34,7 +33,7 @@ public class UserController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<Void> registerUser(@RequestBody @Valid UserRequestDTO appUserRequestDTO){
         log.debug("UserController.registerUser()");
-        return orionLDService.registerUserInContextBroker(appUserRequestDTO);
+        return userDataFacadeService.createUserEntity(appUserRequestDTO);
     }
 
     @GetMapping
@@ -48,8 +47,10 @@ public class UserController {
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "UserId don't match with any users on context broker.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<UserAttribute> getUserDataByUserId(@RequestParam String userId){
+    public Mono<UserAttribute> getUserDataByUserId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         log.debug("UserController.getUserDataByUserId");
-        return orionLDService.getUserDataByUserId(userId);
+        log.debug("VerifiableCredentialController.getSelectableVCs()");
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userDataFacadeService::getUserDataByUserId);
     }
 }

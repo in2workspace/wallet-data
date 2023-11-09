@@ -1,8 +1,12 @@
 package es.in2.wallet.data.api.controller;
 
 import es.in2.wallet.data.api.model.DidRequestDTO;
-import es.in2.wallet.data.api.service.OrionLDService;
+import es.in2.wallet.data.api.service.UserDataFacadeService;
+import es.in2.wallet.data.api.utils.ApplicationUtils;
 import es.in2.wallet.data.api.utils.DidMethods;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -12,13 +16,12 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/dids")
+@Slf4j
+@RequiredArgsConstructor
 public class DidController {
 
-    private final OrionLDService orionLDService;
+    private final UserDataFacadeService userDataFacadeService;
 
-    public DidController(OrionLDService orionLDService) {
-        this.orionLDService = orionLDService;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -31,8 +34,11 @@ public class DidController {
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
 
-    public Mono<Void> saveDid(@RequestBody DidRequestDTO didRequestDTO){
-        return orionLDService.saveDid(didRequestDTO.getDid(), DidMethods.fromStringValue(didRequestDTO.getDidType()), didRequestDTO.getUserId());
+    public Mono<Void> saveDid(@RequestBody DidRequestDTO didRequestDTO,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        log.debug("DidController.saveDid()");
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userId -> userDataFacadeService.saveDidByUserId(userId, didRequestDTO.getDid(), DidMethods.fromStringValue(didRequestDTO.getDidType())))
+                .then();
     }
 
     @GetMapping
@@ -45,8 +51,10 @@ public class DidController {
     @ApiResponse(responseCode = "200", description = "List of DIDs retrieved successfully.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<List<String>> getDidListByUserId(@RequestParam String userId){
-        return orionLDService.getDidsByUserId(userId);
+    public Mono<List<String>> getDidListByUserId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        log.debug("DidController.getDidListByUserId");
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userDataFacadeService::getDidsByUserId);
     }
 
     @DeleteMapping
@@ -61,8 +69,11 @@ public class DidController {
     @ApiResponse(responseCode = "404", description = "Did not found")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
 
-    public Mono<Void> deleteDid(@RequestParam String did,@RequestParam String userId){
-        return orionLDService.deleteSelectedDid(did,userId);
+    public Mono<Void> deleteDid(@RequestParam String did,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        log.debug("DidController.deleteDid");
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userId -> userDataFacadeService.deleteDid(userId, did))
+                .then();
     }
 }
 

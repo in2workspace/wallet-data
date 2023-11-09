@@ -7,8 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CredentialRequestDTO {
-    @JsonProperty("userId")
-    private String userId;
     @JsonProperty("credential")
     private String credential;
 }

@@ -3,27 +3,25 @@ package es.in2.wallet.data.api.controller;
 import es.in2.wallet.data.api.model.CredentialRequestDTO;
 import es.in2.wallet.data.api.model.VCTypeListDTO;
 import es.in2.wallet.data.api.model.VcBasicDataDTO;
-import es.in2.wallet.data.api.service.OrionLDService;
+import es.in2.wallet.data.api.service.UserDataFacadeService;
+import es.in2.wallet.data.api.utils.ApplicationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/credentials")
+@Slf4j
+@RequiredArgsConstructor
 public class VerifiableCredentialController {
 
-    private final OrionLDService orionLDService;
-    private static final Logger log = LoggerFactory.getLogger(VerifiableCredentialController.class);
-
-    public VerifiableCredentialController(OrionLDService orionLDService) {
-        this.orionLDService = orionLDService;
-    }
+    private final UserDataFacadeService userDataFacadeService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -35,9 +33,10 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "200", description = "Verifiable credential retrieved successfully.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<List<VcBasicDataDTO>> getVerifiableCredentialList(@RequestParam String userId){
+    public Mono<List<VcBasicDataDTO>> getVerifiableCredentialList(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         log.debug("VerifiableCredentialController.getVerifiableCredential()");
-        return orionLDService.getUserVCsInJson(userId);
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userDataFacadeService::getUserVCs);
     }
 
     @DeleteMapping
@@ -51,9 +50,11 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "Verifiable credential not found")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<Void> deleteVerifiableCredential(@RequestParam String credentialId,@RequestParam String userId){
+    public Mono<Void> deleteVerifiableCredential(@RequestParam String credentialId,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
         log.debug("VerifiableCredentialController.deleteVerifiableCredential()");
-        return orionLDService.deleteVerifiableCredential(credentialId,userId);
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userId -> userDataFacadeService.deleteVerifiableCredentialById(credentialId,userId))
+                .then();
     }
 
     @PostMapping
@@ -66,9 +67,11 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "201", description = "Verifiable credential saved successfully.")
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<Void> saveVerifiableCredential(@RequestBody CredentialRequestDTO credentialRequestDTO){
-        log.debug("VerifiableCredentialController.saveVerifiableCredential()");
-        return orionLDService.saveVC(credentialRequestDTO.getCredential(), credentialRequestDTO.getUserId());
+    public Mono<Void> saveVerifiableCredential(@RequestBody CredentialRequestDTO credentialRequestDTO,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        log.debug("VerifiableCredentialController.saveVerifiableCredential");
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userId -> userDataFacadeService.saveVerifiableCredentialByUserId(userId, credentialRequestDTO.getCredential()))
+                .then();
     }
     @PostMapping("/types")
     @ResponseStatus(HttpStatus.OK)
@@ -81,8 +84,27 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "400", description = "Invalid request.")
     @ApiResponse(responseCode = "404", description = "Verifiable credential don't match with the specified types")
     @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<List<VcBasicDataDTO>> getSelectableVCs(@RequestBody VCTypeListDTO vcTypeListDTO){
-        log.debug("VerifiableCredentialController.getVerifiableCredential()");
-        return orionLDService.getSelectableVCsByVcTypeList(vcTypeListDTO.getVcTypes(), vcTypeListDTO.getUserId());
+    public Mono<List<VcBasicDataDTO>> getSelectableVCs(@RequestBody VCTypeListDTO vcTypeListDTO, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        log.debug("VerifiableCredentialController.getSelectableVCs()");
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userId -> userDataFacadeService.getVCsByVcTypeList(userId, vcTypeListDTO.getVcTypes()));
     }
+
+    @GetMapping("/id")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Get Verifiable Credential by id",
+            description = "Get the Verifiable Credential that matches with the specified id",
+            tags = {"Verifiable Credential Management"}
+    )
+    @ApiResponse(responseCode = "200", description = "Verifiable credential retrieved successfully.")
+    @ApiResponse(responseCode = "400", description = "Invalid request.")
+    @ApiResponse(responseCode = "404", description = "Verifiable credential don't match with the specified id")
+    @ApiResponse(responseCode = "500", description = "Internal server error.")
+    public Mono<String> getSelectableVCs(@RequestParam String credentialId,@RequestParam String format, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+        log.debug("VerifiableCredentialController.getSelectableVCs()");
+        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+                .flatMap(userId -> userDataFacadeService.getVerifiableCredentialByIdAndFormat(userId, credentialId,format));
+    }
+
 }

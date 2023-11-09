@@ -1,8 +1,8 @@
 package es.in2.wallet.data.api.utils;
 
 public enum DidMethods {
-    DID_KEY("did:key"),
-    DID_ELSI("did:elsi");
+    KEY("key"),
+    ELSI("elsi");
 
     private final String stringValue;
 
