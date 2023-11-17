@@ -7,6 +7,8 @@ server:
 app:
   url:
     orion-ld-adapter: ${APP_URL_ORION-LD-ADAPTER}
+    wallet-crypto: ${APP_URL_WALLET-CRYPTO}
+
 
 
 # Logging configuration

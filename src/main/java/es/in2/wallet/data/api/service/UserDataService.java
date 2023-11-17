@@ -12,7 +12,8 @@ public interface UserDataService {
     Mono<List<VcBasicDataDTO>> getUserVCsInJson(UserEntity userEntity);
     Mono<List<VCAttribute>> getVerifiableCredentialsByFormat(UserEntity userEntity,String format);
     Mono<String> getVerifiableCredentialByIdAndFormat(UserEntity userEntity, String id, String format);
-    Mono<UserEntity> deleteVerifiableCredential(UserEntity userEntity, String vcId);
+    Mono<String> extractDidFromVerifiableCredential(UserEntity userEntity, String vcId);
+    Mono<UserEntity> deleteVerifiableCredential(UserEntity userEntity, String vcId, String did);
     Mono<List<VcBasicDataDTO>> getSelectableVCsByVcTypeList(List<String> vcTypeList, UserEntity userEntity);
     Mono<UserEntity> saveDid(UserEntity userEntity, String did, DidMethods didMethod);
     Mono<List<String>> getDidsByUserEntity(UserEntity userEntity);

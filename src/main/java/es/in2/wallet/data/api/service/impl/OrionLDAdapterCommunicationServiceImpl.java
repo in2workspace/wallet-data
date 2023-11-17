@@ -27,6 +27,7 @@ import static es.in2.wallet.data.api.utils.ApiUtils.CONTENT_TYPE_APPLICATION_JSO
 @RequiredArgsConstructor
 public class OrionLDAdapterCommunicationServiceImpl implements OrionLDAdapterCommunicationService {
     private final ApplicationUtils applicationUtils;
+    private final ObjectMapper objectMapper;
     @Value("${app.url.orion-ld-adapter}")
     private String orionldAdapterURL;
     @Override
@@ -39,10 +40,7 @@ public class OrionLDAdapterCommunicationServiceImpl implements OrionLDAdapterCom
         headers.add(new AbstractMap.SimpleEntry<>(CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON));
 
         // Transforming the UserEntity to JSON String
-        return Mono.fromCallable(() -> {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userEntity);
-                })
+        return Mono.fromCallable(() -> objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userEntity))
                 .doOnNext(log::info) // Logging the request body
                 // Performing the POST request
                 .flatMap(requestBody -> applicationUtils.postRequest(url, headers, requestBody))
@@ -66,7 +64,6 @@ public class OrionLDAdapterCommunicationServiceImpl implements OrionLDAdapterCom
                 .flatMap(response -> {
                     try {
                         // Setting up ObjectMapper for deserialization
-                        ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
                         // Deserializing the response into a UserEntity
@@ -92,7 +89,6 @@ public class OrionLDAdapterCommunicationServiceImpl implements OrionLDAdapterCom
     public Mono<Void> updateUserEntityInContextBroker(UserEntity userEntity, String userId) {
         String url = orionldAdapterURL + "/api/v1/update";
 
-        ObjectMapper objectMapper = new ObjectMapper();
         String requestBody;
         try {
             requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userEntity);

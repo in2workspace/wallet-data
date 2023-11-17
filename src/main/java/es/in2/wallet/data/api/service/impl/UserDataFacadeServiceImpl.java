@@ -1,17 +1,20 @@
 package es.in2.wallet.data.api.service.impl;
 
 import es.in2.wallet.data.api.model.UserAttribute;
+import es.in2.wallet.data.api.model.UserEntity;
 import es.in2.wallet.data.api.model.UserRequestDTO;
 import es.in2.wallet.data.api.model.VcBasicDataDTO;
 import es.in2.wallet.data.api.service.OrionLDAdapterCommunicationService;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
 import es.in2.wallet.data.api.service.UserDataService;
+import es.in2.wallet.data.api.service.WalletCryptoCommunicationService;
 import es.in2.wallet.data.api.utils.DidMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.AbstractMap;
 import java.util.List;
 
 @Slf4j
@@ -20,6 +23,7 @@ import java.util.List;
 public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     private final UserDataService userDataService;
     private final OrionLDAdapterCommunicationService orionLDAdapterCommunicationService;
+    private final WalletCryptoCommunicationService walletCryptoCommunicationService;
 
     @Override
     public Mono<Void> saveVerifiableCredentialByUserId(String userId, String vcJwt) {
@@ -52,13 +56,24 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
                 });
     }
     @Override
-    public Mono<Void> deleteVerifiableCredentialById(String credentialId,String userId){
+    public Mono<Void> deleteVerifiableCredentialById(String credentialId, String userId) {
         // Retrieve the UserEntity from the Context Broker
         return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 .flatMap(userEntity ->
-                        // Delete the Verifiable Credential to the UserEntity by userId
-                        userDataService.deleteVerifiableCredential(userEntity, credentialId)
+                        // Extract DID from the Verifiable Credential
+                        userDataService.extractDidFromVerifiableCredential(userEntity, credentialId)
+                                .flatMap(did ->
+                                        // Delete the Private Key associated with the DID
+                                        walletCryptoCommunicationService.deletePrivateKeyAssociateToDID(did)
+                                                .then(Mono.just(new AbstractMap.SimpleEntry<>(userEntity, did)))
+                                )
                 )
+                .flatMap(entry -> {
+                    UserEntity userEntity = entry.getKey();
+                    String did = entry.getValue();
+                    // Delete the Verifiable Credential and associated DID from the UserEntity
+                    return userDataService.deleteVerifiableCredential(userEntity, credentialId, did);
+                })
                 .flatMap(updatedUserEntity ->
                         // Update the UserEntity back in the Context Broker
                         orionLDAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
@@ -69,6 +84,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
                     return Mono.error(e);
                 });
     }
+
     @Override
     public Mono<List<VcBasicDataDTO>> getVCsByVcTypeList(String userId, List<String> vcTypeList) {
         // Retrieve the UserEntity from the Context Broker
