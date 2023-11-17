@@ -57,23 +57,23 @@ public class DidController {
                 .flatMap(userDataFacadeService::getDidsByUserId);
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(
-            summary = "Delete DID",
-            description = "Delete the specified Decentralized Identifier (DID) object from the personal data space.",
-            tags = {"DID Management"}
-    )
-    @ApiResponse(responseCode = "200", description = "DID deleted successfully.")
-    @ApiResponse(responseCode = "400", description = "Invalid request.")
-    @ApiResponse(responseCode = "404", description = "Did not found")
-    @ApiResponse(responseCode = "500", description = "Internal server error.")
-
-    public Mono<Void> deleteDid(@RequestParam String did,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
-        log.debug("DidController.deleteDid");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
-                .flatMap(userId -> userDataFacadeService.deleteDid(userId, did))
-                .then();
-    }
+//    @DeleteMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    @Operation(
+//            summary = "Delete DID",
+//            description = "Delete the specified Decentralized Identifier (DID) object from the personal data space.",
+//            tags = {"DID Management"}
+//    )
+//    @ApiResponse(responseCode = "200", description = "DID deleted successfully.")
+//    @ApiResponse(responseCode = "400", description = "Invalid request.")
+//    @ApiResponse(responseCode = "404", description = "Did not found")
+//    @ApiResponse(responseCode = "500", description = "Internal server error.")
+//
+//    public Mono<Void> deleteDid(@RequestParam String did,@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
+//        log.debug("DidController.deleteDid");
+//        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+//                .flatMap(userId -> userDataFacadeService.deleteDid(userId, did))
+//                .then();
+//    }
 }
 

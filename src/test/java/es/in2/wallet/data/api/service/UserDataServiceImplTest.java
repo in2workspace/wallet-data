@@ -189,6 +189,7 @@ class UserDataServiceImplTest {
     void tesDeleteVC() throws JsonProcessingException {
         // Sample JWT token for a verifiable credential
         String vcID = "vc2";
+        String expectedDid = "did:key123";
 
         // Sample JSON response that the applicationUtils.getRequest() method will be mocked to return
         String userEntityJson = """
@@ -197,7 +198,16 @@ class UserDataServiceImplTest {
                 "type": "userEntity",
                 "dids": {
                     "type": "Property",
-                    "value": []
+                    "value": [
+                            {
+                                "type": "key",
+                                "value": "did:key:123"
+                            },
+                            {
+                                "type": "key",
+                                "value": "did:key:654"
+                            }
+                        ]
                 },
                 "userData": {
                     "type": "Property",
@@ -215,6 +225,7 @@ class UserDataServiceImplTest {
                             "value": {
                                 "type": ["VerifiableCredential", "SpecificCredentialType"],
                                 "credentialSubject": {
+                                    "id": "did:key:123",
                                     "name": "John Doe"
                                 },
                                 "id": "vc1"
@@ -226,6 +237,7 @@ class UserDataServiceImplTest {
                             "value": {
                                 "type": ["VerifiableCredential", "LEARCredential"],
                                 "credentialSubject": {
+                                    "id": "did:key:654",
                                     "name": "John Doe",
                                     "age": "25"
                                 },
@@ -241,10 +253,12 @@ class UserDataServiceImplTest {
 
         // Executing the method under test
         StepVerifier.create(userDataServiceImpl.deleteVerifiableCredential(userEntity,vcID))
-                .assertNext(userEntity1 -> assertFalse(
-                        userEntity1.getVcs().getValue().stream().anyMatch(vcAttribute -> vcAttribute.getId().equals(vcID)),
-                        "The VC with id " + vcID + " should be deleted"
-                ))
+                .assertNext(userEntity1 -> {
+                    assertTrue(userEntity1.getDids().getValue().stream().noneMatch(didAttr -> didAttr.getValue().equals(expectedDid)),
+                            "The DID associated with VC id " + vcID + " should be deleted");
+                    assertFalse(userEntity1.getVcs().getValue().stream().anyMatch(vcAttribute -> vcAttribute.getId().equals(vcID)),
+                            "The VC with id " + vcID + " should be deleted");
+                })
                 .expectComplete()
                 .verify();
     }
