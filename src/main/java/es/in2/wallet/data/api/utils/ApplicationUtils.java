@@ -60,6 +60,16 @@ public class ApplicationUtils {
                 .bodyToMono(String.class)
                 .doOnNext(response -> logCRUD(url, headers, body, response, "PATCH"));
     }
+    public Mono<String> deleteRequest(String url, List<Map.Entry<String, String>> headers) {
+        return webClient.delete()
+                .uri(url)
+                .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
+                .retrieve()
+                .onStatus(status -> status != HttpStatus.OK, clientResponse ->
+                        Mono.error(new RuntimeException("Error during delete request: " + clientResponse.statusCode())))
+                .bodyToMono(String.class)
+                .doOnNext(response -> logCRUD(url, headers, "", response, "DELETE"));
+    }
 
     private void logCRUD(String url, List<Map.Entry<String, String>> headers, String requestBody, String responseBody, String method) {
         log.debug("********************************************************************************");

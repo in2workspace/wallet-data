@@ -7,6 +7,7 @@ server:
 app:
   url:
     orion-ld-adapter: http://localhost:8082
+    wallet-crypto: http://localhost:8081
 
 
 # Logging configuration

@@ -132,66 +132,67 @@ public class UserDataServiceImpl implements UserDataService {
                 })
                 .onErrorResume(FailedCommunicationException.class, Mono::error);
     }
+    @Override
+    public Mono<String> extractDidFromVerifiableCredential(UserEntity userEntity, String vcId) {
+        // Defer the execution until subscription
+        return Mono.defer(() -> {
+            List<VCAttribute> vcAttributes = userEntity.getVcs().getValue();
+
+            // Find the specified VC by ID and type, then wrap it in a Mono
+            return Mono.justOrEmpty(vcAttributes.stream()
+                            .filter(vc -> vc.getId().equals(vcId) && vc.getType().equals(VC_JSON))
+                            .findFirst())
+                    // If the VC is not found, return an error Mono
+                    .switchIfEmpty(Mono.error(new NoSuchVerifiableCredentialException("VC not found: " + vcId)))
+                    // Extract the DID from the VC
+                    .flatMap(vcToExtract -> {
+                        try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            JsonNode credentialNode = mapper.convertValue(vcToExtract.getValue(), JsonNode.class);
+                            JsonNode didNode = credentialNode.path(CREDENTIAL_SUBJECT).path("id");
+
+                            // If the DID is missing in the VC, return an error Mono
+                            if (didNode.isMissingNode()) {
+                                return Mono.error(new NoSuchVerifiableCredentialException("DID not found in VC: " + vcId));
+                            }
+
+                            // Return the DID as a Mono<String>
+                            return Mono.just(didNode.asText());
+                        } catch (Exception e) {
+                            // If an error occurs during processing, return an error Mono
+                            return Mono.error(new RuntimeException("Error processing VC: " + vcId, e));
+                        }
+                    });
+        });
+    }
 
     @Override
-    public Mono<UserEntity> deleteVerifiableCredential(UserEntity userEntity, String vcId) {
-        // Start with the original list of VCAttributes from the UserEntity
-        List<VCAttribute> originalVCs = userEntity.getVcs().getValue();
+    public Mono<UserEntity> deleteVerifiableCredential(UserEntity userEntity, String vcId, String did) {
+        // Remove the associated DID from the user entity's DID list
+        List<DidAttribute> updatedDids = userEntity.getDids().getValue().stream()
+                .filter(didAttr -> !didAttr.getValue().equals(did))
+                .toList();
 
-        VCAttribute vcToDelete;
-        try {
-            // Find the specific VC to delete by its ID and type, throw an exception if not found
-            vcToDelete = originalVCs.stream()
-                    .filter(vc -> vc.getId().equals(vcId) && vc.getType().equals(VC_JSON))
-                    .findFirst()
-                    .orElseThrow(() -> new NoSuchVerifiableCredentialException("VC not found or not of type VC_JSON: " + vcId));
-        } catch (NoSuchVerifiableCredentialException e) {
-            // Log the error and return an error Mono if VC is not found
-            log.error("Error: {}", e.getMessage());
-            return Mono.error(e);
-        }
+        // Remove the credential from the user entity's VC list
+        List<VCAttribute> updatedVCs = userEntity.getVcs().getValue().stream()
+                .filter(vcAttribute -> !vcAttribute.getId().equals(vcId))
+                .toList();
 
-        String didToBeDeleted;
+        // Create a new UserEntity with the updated lists
+        UserEntity updatedUserEntity = new UserEntity(
+                userEntity.getId(),
+                userEntity.getType(),
+                userEntity.getUserData(),
+                new EntityAttribute<>(userEntity.getDids().getType(), updatedDids),
+                new EntityAttribute<>(userEntity.getVcs().getType(), updatedVCs)
+        );
 
-        try {
-            // Use ObjectMapper to parse the VC JSON value to extract the DID
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode credentialNode = mapper.convertValue(vcToDelete.getValue(), JsonNode.class);
-            JsonNode didNode = credentialNode.path(CREDENTIAL_SUBJECT).path("id");
-            if (didNode.isMissingNode()) {
-                // If DID is missing in the VC, log the error and return an error Mono
-                log.error("DID not found in VC: {}", vcId);
-                return Mono.error(new NoSuchVerifiableCredentialException("DID not found in VC: " + vcId));
-            }
-            didToBeDeleted = didNode.asText();
-        } catch (Exception e) {
-            // Log any errors during the JSON processing and return an error Mono
-            log.error("Error processing VC: {}", vcId, e);
-            return Mono.error(new RuntimeException("Error processing VC: " + vcId, e));
-        }
-
-        // Delete the DID first
-        return deleteSelectedDidFromUserEntity(didToBeDeleted, userEntity)
-                .flatMap(updatedUserEntity -> {
-                    // After successfully deleting the DID, remove the VC
-                    List<VCAttribute> updatedVCs = originalVCs.stream()
-                            .filter(vcAttribute -> !vcAttribute.getId().equals(vcId))
-                            .toList();
-
-                    // Create a new UserEntity with the updated list of VCAttributes
-                    UserEntity userEntityWithVCDeleted = new UserEntity(
-                            updatedUserEntity.getId(),
-                            updatedUserEntity.getType(),
-                            updatedUserEntity.getUserData(),
-                            updatedUserEntity.getDids(),
-                            new EntityAttribute<>(updatedUserEntity.getVcs().getType(), updatedVCs)
-                    );
-
-                    // Log the successful deletion and return the updated UserEntity
-                    log.info("Verifiable Credential with ID: {} and associated DID deleted successfully for user: {}", vcId, userEntity.getId());
-                    return Mono.just(userEntityWithVCDeleted);
-                });
+        // Log the successful operation and return the updated entity
+        log.info("Verifiable Credential with ID: {} and associated DID deleted successfully for user: {}", vcId, userEntity.getId());
+        return Mono.just(updatedUserEntity);
     }
+
+
 
     @Override
     public Mono<List<VCAttribute>> getVerifiableCredentialsByFormat(UserEntity userEntity, String format) {

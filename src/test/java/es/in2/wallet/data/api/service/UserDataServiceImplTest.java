@@ -252,7 +252,7 @@ class UserDataServiceImplTest {
         UserEntity userEntity = objectMapper.readValue(userEntityJson, UserEntity.class);
 
         // Executing the method under test
-        StepVerifier.create(userDataServiceImpl.deleteVerifiableCredential(userEntity,vcID))
+        StepVerifier.create(userDataServiceImpl.deleteVerifiableCredential(userEntity,vcID,expectedDid))
                 .assertNext(userEntity1 -> {
                     assertTrue(userEntity1.getDids().getValue().stream().noneMatch(didAttr -> didAttr.getValue().equals(expectedDid)),
                             "The DID associated with VC id " + vcID + " should be deleted");
