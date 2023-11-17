@@ -7,6 +7,7 @@ import es.in2.wallet.data.api.exception.*;
 import es.in2.wallet.data.api.model.*;
 import es.in2.wallet.data.api.service.UserDataService;
 import es.in2.wallet.data.api.utils.DidMethods;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,9 @@ import static es.in2.wallet.data.api.utils.ApiUtils.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserDataServiceImpl implements UserDataService {
+    private final ObjectMapper objectMapper;
     @Override
     public Mono<UserEntity> saveVC(UserEntity userEntity, String vcJwt) {
         // Extract the JSON content from the VC JWT.
@@ -51,7 +54,7 @@ public class UserDataServiceImpl implements UserDataService {
                 .onErrorMap(ParseException.class, e -> new ParseErrorException("Error while parsing VC JWT: " + e.getMessage()))
                 .handle((parsedVcJwt, sink) -> {
                     try {
-                        JsonNode jsonObject = new ObjectMapper().readTree(parsedVcJwt.getPayload().toString());
+                        JsonNode jsonObject = objectMapper.readTree(parsedVcJwt.getPayload().toString());
                         JsonNode vcJson = jsonObject.get("vc");
                         if (vcJson != null) {
                             log.debug("Verifiable Credential JSON extracted from VC JWT: {}", vcJson);
@@ -83,8 +86,7 @@ public class UserDataServiceImpl implements UserDataService {
                 .filter(vcAttribute -> VC_JSON.equals(vcAttribute.getType()))
                 .flatMap(item -> {
                     LinkedHashMap<?, ?> vcDataValue = (LinkedHashMap<?, ?>) item.getValue();
-                    ObjectMapper mapper = new ObjectMapper();
-                    JsonNode jsonNode = mapper.convertValue(vcDataValue, JsonNode.class);
+                    JsonNode jsonNode = objectMapper.convertValue(vcDataValue, JsonNode.class);
 
                     return getVcTypeListFromVcJson(jsonNode)
                             .map(vcTypeList -> new VcBasicDataDTO(
@@ -103,8 +105,7 @@ public class UserDataServiceImpl implements UserDataService {
                 .flatMap(item -> {
                     // Parse the VC stored into a JsonNode object
                     LinkedHashMap<?, ?> vcDataValue = (LinkedHashMap<?, ?>) item.getValue();
-                    ObjectMapper mapper = new ObjectMapper();
-                    JsonNode jsonNode = mapper.convertValue(vcDataValue, JsonNode.class);
+                    JsonNode jsonNode = objectMapper.convertValue(vcDataValue, JsonNode.class);
 
                     // Create a Mono<List<String>> of the VC types
                     return getVcTypeListFromVcJson(jsonNode)
@@ -147,8 +148,7 @@ public class UserDataServiceImpl implements UserDataService {
                     // Extract the DID from the VC
                     .flatMap(vcToExtract -> {
                         try {
-                            ObjectMapper mapper = new ObjectMapper();
-                            JsonNode credentialNode = mapper.convertValue(vcToExtract.getValue(), JsonNode.class);
+                            JsonNode credentialNode = objectMapper.convertValue(vcToExtract.getValue(), JsonNode.class);
                             JsonNode didNode = credentialNode.path(CREDENTIAL_SUBJECT).path("id");
 
                             // If the DID is missing in the VC, return an error Mono
@@ -242,7 +242,6 @@ public class UserDataServiceImpl implements UserDataService {
             return Mono.just(string);
         } else {
             // Convert non-String values to JSON String using ObjectMapper
-            ObjectMapper objectMapper = new ObjectMapper();
             try {
                 String jsonValue = objectMapper.writeValueAsString(value);
                 return Mono.just(jsonValue);

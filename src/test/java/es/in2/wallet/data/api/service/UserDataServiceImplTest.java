@@ -1,7 +1,9 @@
 package es.in2.wallet.data.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import es.in2.wallet.data.api.model.*;
 import es.in2.wallet.data.api.service.impl.UserDataServiceImpl;
 import es.in2.wallet.data.api.utils.DidMethods;
@@ -20,13 +22,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserDataServiceImplTest {
 
     private UserDataServiceImpl userDataServiceImpl;
-    private ObjectMapper objectMapper;
+
+    private final ObjectMapper objectMapper =
+            // sort alphabetically, to ensure same order when hashing.
+            JsonMapper.builder().configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true).build();
 
 
     @BeforeEach
     void setUp() {
-        userDataServiceImpl = new UserDataServiceImpl();
-        objectMapper = new ObjectMapper();
+        userDataServiceImpl = new UserDataServiceImpl(objectMapper);
     }
     
 
