@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/credentials")
+@RequestMapping("/api/v1/credentials")
 @Slf4j
 @RequiredArgsConstructor
 public class VerifiableCredentialController {

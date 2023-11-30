@@ -43,7 +43,7 @@ class VerifiableCredentialControllerTest {
                 .thenReturn(Mono.just(credentials));
 
         webClient.get()
-                .uri("/api/credentials")
+                .uri("/api/v1/credentials")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .exchange()
                 .expectStatus().isOk()
@@ -68,7 +68,7 @@ class VerifiableCredentialControllerTest {
                 .thenReturn(Mono.empty());
 
         webClient.delete()
-                .uri(uriBuilder -> uriBuilder.path("/api/credentials")
+                .uri(uriBuilder -> uriBuilder.path("/api/v1/credentials")
                         .queryParam("credentialId", credentialId)
                         .build())
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
@@ -86,7 +86,7 @@ class VerifiableCredentialControllerTest {
                 .thenReturn(Mono.empty());
 
         webClient.post()
-                .uri("/api/credentials")
+                .uri("/api/v1/credentials")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(credentialRequestDTO)
@@ -110,7 +110,7 @@ class VerifiableCredentialControllerTest {
                 .thenReturn(Mono.just(credentials));
 
         webClient.post()
-                .uri("/api/credentials/types")
+                .uri("/api/v1/credentials/types")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(vcTypeList)

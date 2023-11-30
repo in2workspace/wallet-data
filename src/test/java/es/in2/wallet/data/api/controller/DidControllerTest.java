@@ -40,7 +40,7 @@ class DidControllerTest {
                 .thenReturn(Mono.empty());
 
         webClient.post()
-                .uri("/api/dids")
+                .uri("/api/v1/dids")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(didRequestDTO)
@@ -57,7 +57,7 @@ class DidControllerTest {
                 .thenReturn(Mono.just(dids));
 
         webClient.get()
-                .uri("/api/dids")
+                .uri("/api/v1/dids")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .exchange()
                 .expectStatus().isOk()
