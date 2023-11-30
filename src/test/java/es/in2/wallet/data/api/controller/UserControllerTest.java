@@ -39,7 +39,7 @@ class UserControllerTest {
         Mockito.when(userDataFacadeService.createUserEntity(userRequest)).thenReturn(Mono.empty());
 
         webClient.post()
-                .uri("/api/users")
+                .uri("/api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(userRequest)
                 .exchange()
@@ -57,7 +57,7 @@ class UserControllerTest {
         Mockito.when(userDataFacadeService.getUserDataByUserId("aeb5f849-3909-48d3-9702-a78367ba24f5")).thenReturn(Mono.just(expectedUserAttribute));
 
         webClient.get()
-                .uri("/api/users")
+                .uri("/api/v1/users")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .exchange()
                 .expectStatus().isOk()

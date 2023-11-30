@@ -20,7 +20,7 @@ public class WalletCryptoCommunicationServiceImpl implements WalletCryptoCommuni
     @Value("${app.url.wallet-crypto}")
     private String walletCryptoURL;
     @Override
-    public Mono<Void> deletePrivateKeyAssociateToDID(String did) {
+    public Mono<String> deletePrivateKeyAssociateToDID(String did) {
         // Build the URL for the DELETE request, including the DID as a query parameter
         String deleteUrl = walletCryptoURL + "/api/v1/credentials?did=" + did;
 
@@ -34,7 +34,7 @@ public class WalletCryptoCommunicationServiceImpl implements WalletCryptoCommuni
                     return new FailedCommunicationException("Failed to communicate with the wallet-crypto service for DID: " + did);
                 })
                 // Convert the response to Mono<Void> to handle completion only
-                .then();
+                .then(Mono.just(did));
     }
 
 

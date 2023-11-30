@@ -2,12 +2,12 @@ spring:
   application:
     name: WalletData
 server:
-  port: ${SERVER_PORT}
+  port:
 
 app:
   url:
-    orion-ld-adapter: ${APP_URL_ORION-LD-ADAPTER}
-    wallet-crypto: ${APP_URL_WALLET-CRYPTO}
+    broker-adapter:
+    wallet-crypto:
 
 
 
@@ -45,7 +45,7 @@ springdoc:
 
 openapi:
   server:
-    url: ${APP_URL_API}
+    url:
     description: Spring Wallet Data API
   info:
     title: IN2 Wallet data project

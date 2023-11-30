@@ -3,5 +3,5 @@ package es.in2.wallet.data.api.service;
 import reactor.core.publisher.Mono;
 
 public interface WalletCryptoCommunicationService {
-    Mono<Void> deletePrivateKeyAssociateToDID(String did);
+    Mono<String> deletePrivateKeyAssociateToDID(String did);
 }

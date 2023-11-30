@@ -6,7 +6,7 @@ server:
 
 app:
   url:
-    orion-ld-adapter: http://localhost:8082
+    broker-adapter: http://localhost:8090
     wallet-crypto: http://localhost:8081
 
 

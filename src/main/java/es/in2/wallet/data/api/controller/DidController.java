@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/dids")
+@RequestMapping("/api/v1/dids")
 @Slf4j
 @RequiredArgsConstructor
 public class DidController {

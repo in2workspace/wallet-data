@@ -4,7 +4,7 @@ import es.in2.wallet.data.api.model.UserAttribute;
 import es.in2.wallet.data.api.model.UserEntity;
 import es.in2.wallet.data.api.model.UserRequestDTO;
 import es.in2.wallet.data.api.model.VcBasicDataDTO;
-import es.in2.wallet.data.api.service.OrionLDAdapterCommunicationService;
+import es.in2.wallet.data.api.service.BrokerAdapterCommunicationService;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
 import es.in2.wallet.data.api.service.UserDataService;
 import es.in2.wallet.data.api.service.WalletCryptoCommunicationService;
@@ -22,20 +22,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     private final UserDataService userDataService;
-    private final OrionLDAdapterCommunicationService orionLDAdapterCommunicationService;
+    private final BrokerAdapterCommunicationService brokerAdapterCommunicationService;
     private final WalletCryptoCommunicationService walletCryptoCommunicationService;
 
     @Override
     public Mono<Void> saveVerifiableCredentialByUserId(String userId, String vcJwt) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 .flatMap(userEntity ->
                         // Save the Verifiable Credential to the UserEntity
                         userDataService.saveVC(userEntity, vcJwt)
                 )
                 .flatMap(updatedUserEntity ->
                         // Update the UserEntity back in the Context Broker
-                        orionLDAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
+                        brokerAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
                 )
                 .doOnSuccess(aVoid -> log.info("Verifiable Credential saved and UserEntity updated successfully for userId: {}", userId))
                 .onErrorResume(e -> {
@@ -46,7 +46,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<List<VcBasicDataDTO>> getUserVCs(String userId) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 // Once the UserEntity is retrieved, use the userDataService to get VCs in JSON format
                 .flatMap(userDataService::getUserVCsInJson)
                 .doOnSuccess(vcBasicDataDTOList -> log.info("Retrieved VCs in JSON for userId: {}", userId))
@@ -58,7 +58,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<Void> deleteVerifiableCredentialById(String credentialId, String userId) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 .flatMap(userEntity ->
                         // Extract DID from the Verifiable Credential
                         userDataService.extractDidFromVerifiableCredential(userEntity, credentialId)
@@ -76,7 +76,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
                 })
                 .flatMap(updatedUserEntity ->
                         // Update the UserEntity back in the Context Broker
-                        orionLDAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
+                        brokerAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
                 )
                 .doOnSuccess(aVoid -> log.info("Verifiable Credential deleted and UserEntity updated successfully for userId: {}", userId))
                 .onErrorResume(e -> {
@@ -88,7 +88,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<List<VcBasicDataDTO>> getVCsByVcTypeList(String userId, List<String> vcTypeList) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 // Once the UserEntity is retrieved, pass it to the userDataService
                 .flatMap(userEntity -> userDataService.getSelectableVCsByVcTypeList(vcTypeList, userEntity))
                 .doOnSuccess(vcBasicDataDTOList -> log.info("Selectable VCs retrieved for userId: {}", userId))
@@ -100,14 +100,14 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<Void> saveDidByUserId(String userId, String did, DidMethods didMethod) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 .flatMap(userEntity ->
                         // Save the Did to the UserEntity
                         userDataService.saveDid(userEntity,did,didMethod)
                 )
                 .flatMap(updatedUserEntity ->
                         // Update the UserEntity back in the Context Broker
-                        orionLDAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
+                        brokerAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
                 )
                 .doOnSuccess(aVoid -> log.info("Did saved and UserEntity updated successfully for userId: {}", userId))
                 .onErrorResume(e -> {
@@ -118,14 +118,14 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<Void> deleteDid(String userId,String did){
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 .flatMap(userEntity ->
                         // Delete the Did to the UserEntity by userId
                         userDataService.deleteSelectedDidFromUserEntity(did,userEntity)
                 )
                 .flatMap(updatedUserEntity ->
                         // Update the UserEntity back in the Context Broker
-                        orionLDAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
+                        brokerAdapterCommunicationService.updateUserEntityInContextBroker(updatedUserEntity, userId)
                 )
                 .doOnSuccess(aVoid -> log.info("Did deleted and UserEntity updated successfully for userId: {}", userId))
                 .onErrorResume(e -> {
@@ -136,7 +136,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<List<String>> getDidsByUserId(String userId) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 // Use flatMap to transform the Mono<UserEntity> to a Mono<List<String>>
                 .flatMap(userDataService::getDidsByUserEntity)
                 .doOnSuccess(dids -> log.info("Retrieved DIDs for userId: {}", userId))
@@ -149,7 +149,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     public Mono<Void> createUserEntity(UserRequestDTO userRequestDTO) {
         // Create the UserEntity using the provided DTO
         return userDataService.createUserEntity(userRequestDTO)
-                .flatMap(orionLDAdapterCommunicationService::storeUserInContextBroker)
+                .flatMap(brokerAdapterCommunicationService::storeUserInContextBroker)
                 .doOnSuccess(aVoid -> log.info("UserEntity successfully persisted for: {}", userRequestDTO.getUserId()))
                 .onErrorResume(e -> {
                     log.error("Error while persisting UserEntity for: {}", userRequestDTO.getUserId(), e);
@@ -159,7 +159,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<UserAttribute> getUserDataByUserId(String userId) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 // Once the UserEntity is retrieved, use the userDataService to get the UserData
                 .flatMap(userDataService::getUserDataFromUserEntity)
                 .doOnSuccess(userData -> log.debug("Fetched user data for userId: {}", userId))
@@ -171,7 +171,7 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
     @Override
     public Mono<String> getVerifiableCredentialByIdAndFormat(String userId, String credentialId, String format) {
         // Retrieve the UserEntity from the Context Broker
-        return orionLDAdapterCommunicationService.getUserEntityFromContextBroker(userId)
+        return brokerAdapterCommunicationService.getUserEntityFromContextBroker(userId)
                 // Once the UserEntity is retrieved, use the userDataService to get the UserData
                 .flatMap(userEntity -> userDataService.getVerifiableCredentialByIdAndFormat(userEntity,credentialId,format))
                 .doOnSuccess(userData -> log.debug("Fetched user data for userId: {}", userId))
