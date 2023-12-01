@@ -1,11 +1,11 @@
 package es.in2.wallet.data.api.service.impl;
 
+import es.in2.wallet.data.api.config.properties.WalletCryptoProperties;
 import es.in2.wallet.data.api.exception.FailedCommunicationException;
 import es.in2.wallet.data.api.service.WalletCryptoCommunicationService;
-import es.in2.wallet.data.api.utils.ApplicationUtils;
+import es.in2.wallet.data.api.util.ApplicationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -17,12 +17,11 @@ import java.util.ArrayList;
 public class WalletCryptoCommunicationServiceImpl implements WalletCryptoCommunicationService {
 
     private final ApplicationUtils applicationUtils;
-    @Value("${app.url.wallet-crypto}")
-    private String walletCryptoURL;
+    private final WalletCryptoProperties walletCryptoProperties;
     @Override
     public Mono<String> deletePrivateKeyAssociateToDID(String did) {
         // Build the URL for the DELETE request, including the DID as a query parameter
-        String deleteUrl = walletCryptoURL + "/api/v1/credentials?did=" + did;
+        String deleteUrl = walletCryptoProperties.url() + "/api/v1/credentials?did=" + did;
 
         // Perform the DELETE request using ApplicationUtils
         return applicationUtils.deleteRequest(deleteUrl, new ArrayList<>())

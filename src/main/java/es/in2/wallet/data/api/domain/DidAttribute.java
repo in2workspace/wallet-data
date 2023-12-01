@@ -1,4 +1,4 @@
-package es.in2.wallet.data.api.model;
+package es.in2.wallet.data.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -6,16 +6,13 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class VCAttribute {
-    @JsonProperty("id")
-    private String id;
-
+@NoArgsConstructor
+public class DidAttribute {
     @JsonProperty("type")
     private String type;
 
     @JsonProperty("value")
-    private Object value;
+    private String value;
 
 }

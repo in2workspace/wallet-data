@@ -1,8 +1,8 @@
 package es.in2.wallet.data.api.controller;
 
-import es.in2.wallet.data.api.model.CredentialRequestDTO;
-import es.in2.wallet.data.api.model.VCTypeListDTO;
-import es.in2.wallet.data.api.model.VcBasicDataDTO;
+import es.in2.wallet.data.api.domain.CredentialRequestDTO;
+import es.in2.wallet.data.api.domain.VCTypeListDTO;
+import es.in2.wallet.data.api.domain.VcBasicDataDTO;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

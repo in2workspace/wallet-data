@@ -3,14 +3,14 @@ package es.in2.wallet.data.api.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import es.in2.wallet.data.api.config.properties.BrokerAdapterProperties;
 import es.in2.wallet.data.api.exception.FailedCommunicationException;
 import es.in2.wallet.data.api.exception.NoSuchUserEntity;
-import es.in2.wallet.data.api.model.UserEntity;
+import es.in2.wallet.data.api.domain.UserEntity;
 import es.in2.wallet.data.api.service.BrokerAdapterCommunicationService;
-import es.in2.wallet.data.api.utils.ApplicationUtils;
+import es.in2.wallet.data.api.util.ApplicationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static es.in2.wallet.data.api.utils.ApiUtils.CONTENT_TYPE;
-import static es.in2.wallet.data.api.utils.ApiUtils.CONTENT_TYPE_APPLICATION_JSON;
+import static es.in2.wallet.data.api.util.ApiUtils.CONTENT_TYPE;
+import static es.in2.wallet.data.api.util.ApiUtils.CONTENT_TYPE_APPLICATION_JSON;
 
 @Slf4j
 @Service
@@ -28,12 +28,11 @@ import static es.in2.wallet.data.api.utils.ApiUtils.CONTENT_TYPE_APPLICATION_JSO
 public class BrokerAdapterCommunicationServiceImpl implements BrokerAdapterCommunicationService {
     private final ApplicationUtils applicationUtils;
     private final ObjectMapper objectMapper;
-    @Value("${app.url.broker-adapter}")
-    private String brokerAdapterURL;
+    private final BrokerAdapterProperties brokerAdapterProperties;
     @Override
     public Mono<Void> storeUserInContextBroker(UserEntity userEntity) {
         // Building the URL for the POST request
-        String url = brokerAdapterURL + "/api/v1/publish";
+        String url = brokerAdapterProperties.url() + "/api/v1/publish";
 
         // Preparing request headers
         List<Map.Entry<String, String>> headers = new ArrayList<>();
@@ -56,7 +55,7 @@ public class BrokerAdapterCommunicationServiceImpl implements BrokerAdapterCommu
     @Override
     public Mono<UserEntity> getUserEntityFromContextBroker(String userId) {
         // Building the URL for the GET request
-        String url = brokerAdapterURL + "/api/v1/entities/urn:entities:userId:" + userId;
+        String url = brokerAdapterProperties.url() + "/api/v1/entities/urn:entities:userId:" + userId;
 
         // Using the ApplicationUtils class to perform the GET request
         return applicationUtils.getRequest(url, new ArrayList<>())
@@ -87,7 +86,7 @@ public class BrokerAdapterCommunicationServiceImpl implements BrokerAdapterCommu
 
     @Override
     public Mono<Void> updateUserEntityInContextBroker(UserEntity userEntity, String userId) {
-        String url = brokerAdapterURL + "/api/v1/update";
+        String url = brokerAdapterProperties.url() + "/api/v1/update";
 
         String requestBody;
         try {

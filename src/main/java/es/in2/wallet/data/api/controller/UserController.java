@@ -1,9 +1,9 @@
 package es.in2.wallet.data.api.controller;
 
-import es.in2.wallet.data.api.model.UserAttribute;
-import es.in2.wallet.data.api.model.UserRequestDTO;
+import es.in2.wallet.data.api.domain.UserAttribute;
+import es.in2.wallet.data.api.domain.UserRequestDTO;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
-import es.in2.wallet.data.api.utils.ApplicationUtils;
+import es.in2.wallet.data.api.util.ApplicationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;

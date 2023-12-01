@@ -2,13 +2,13 @@ spring:
   application:
     name: WalletData
 server:
-  port:
+  port: 8086
 
-app:
-  url:
-    broker-adapter:
-    wallet-crypto:
 
+broker-adapter:
+  url: http://localhost:8090
+wallet-crypto:
+  url: http://localhost:8081
 
 
 # Logging configuration
@@ -18,7 +18,7 @@ logging:
     root: INFO
     # Set log level for specific packages or classes
     es.in2.wallet.data.api.service: DEBUG
-    es.in2.wallet.data.api.utils: DEBUG
+    es.in2.wallet.data.api.util: DEBUG
 
 management:
   endpoints:
@@ -34,7 +34,6 @@ management:
       enabled: true
       show-details: always
 
-# Documentation Configuration
 springdoc:
   api-docs:
     path: /api-docs
@@ -45,7 +44,7 @@ springdoc:
 
 openapi:
   server:
-    url:
+    url: http://localhost:8086
     description: Spring Wallet Data API
   info:
     title: IN2 Wallet data project

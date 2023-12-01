@@ -1,7 +1,7 @@
 package es.in2.wallet.data.api.service;
 
-import es.in2.wallet.data.api.model.*;
-import es.in2.wallet.data.api.utils.DidMethods;
+import es.in2.wallet.data.api.domain.*;
+import es.in2.wallet.data.api.util.DidMethods;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

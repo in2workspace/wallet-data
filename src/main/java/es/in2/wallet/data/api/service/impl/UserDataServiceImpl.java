@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.in2.wallet.data.api.exception.*;
-import es.in2.wallet.data.api.model.*;
+import es.in2.wallet.data.api.domain.*;
 import es.in2.wallet.data.api.service.UserDataService;
-import es.in2.wallet.data.api.utils.DidMethods;
+import es.in2.wallet.data.api.util.DidMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 import java.text.ParseException;
 import java.util.*;
 
-import static es.in2.wallet.data.api.utils.ApiUtils.*;
+import static es.in2.wallet.data.api.util.ApiUtils.*;
 
 @Slf4j
 @Service
