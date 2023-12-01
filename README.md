@@ -32,11 +32,10 @@ wallet-data:
   container_name: wallet-data
   image: in2kizuna/wallet-data:v1.0.0
   environment:
-    SPRING_PROFILES_ACTIVE: "local-docker"
     SERVER_PORT: "8086"
     OPENAPI_SERVER_URL: "http://wallet-data:8086"
-    APP_URL_BROKER-ADAPTER: "http://broker-adapter:8080"
-    APP_URL_WALLET-CRYPTO: "http://wallet-crypto:8081"
+    BROKER-ADAPTER_URL: "http://broker-adapter:8080"
+    WALLET-CRYPTO_URL: "http://wallet-crypto:8081"
   command:
     - run
   ports:
