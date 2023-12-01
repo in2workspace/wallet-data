@@ -1,10 +1,10 @@
 package es.in2.wallet.data.api.controller;
 
-import es.in2.wallet.data.api.model.CredentialRequestDTO;
-import es.in2.wallet.data.api.model.VCTypeListDTO;
-import es.in2.wallet.data.api.model.VcBasicDataDTO;
+import es.in2.wallet.data.api.domain.CredentialRequestDTO;
+import es.in2.wallet.data.api.domain.VCTypeListDTO;
+import es.in2.wallet.data.api.domain.VcBasicDataDTO;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
-import es.in2.wallet.data.api.utils.ApplicationUtils;
+import es.in2.wallet.data.api.util.ApplicationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;

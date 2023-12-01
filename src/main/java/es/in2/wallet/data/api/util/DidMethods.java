@@ -1,4 +1,4 @@
-package es.in2.wallet.data.api.utils;
+package es.in2.wallet.data.api.util;
 
 public enum DidMethods {
     KEY("key"),

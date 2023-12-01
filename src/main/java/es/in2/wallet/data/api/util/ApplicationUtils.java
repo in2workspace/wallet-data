@@ -1,4 +1,4 @@
-package es.in2.wallet.data.api.utils;
+package es.in2.wallet.data.api.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,8 +14,8 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-import static es.in2.wallet.data.api.utils.ApiUtils.BEARER;
-import static es.in2.wallet.data.api.utils.ApiUtils.INVALID_AUTH_HEADER;
+import static es.in2.wallet.data.api.util.ApiUtils.BEARER;
+import static es.in2.wallet.data.api.util.ApiUtils.INVALID_AUTH_HEADER;
 
 @Component
 @Slf4j

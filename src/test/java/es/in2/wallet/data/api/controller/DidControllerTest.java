@@ -1,6 +1,6 @@
 package es.in2.wallet.data.api.controller;
 
-import es.in2.wallet.data.api.model.DidRequestDTO;
+import es.in2.wallet.data.api.domain.DidRequestDTO;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

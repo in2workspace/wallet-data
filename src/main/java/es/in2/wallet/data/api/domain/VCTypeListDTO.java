@@ -1,4 +1,4 @@
-package es.in2.wallet.data.api.model;
+package es.in2.wallet.data.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package es.in2.wallet.data.api.service;
 
-import es.in2.wallet.data.api.model.UserEntity;
+import es.in2.wallet.data.api.domain.UserEntity;
 import reactor.core.publisher.Mono;
 
 public interface BrokerAdapterCommunicationService {

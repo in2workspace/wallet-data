@@ -1,9 +1,9 @@
 package es.in2.wallet.data.api.controller;
 
-import es.in2.wallet.data.api.model.DidRequestDTO;
+import es.in2.wallet.data.api.domain.DidRequestDTO;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
-import es.in2.wallet.data.api.utils.ApplicationUtils;
-import es.in2.wallet.data.api.utils.DidMethods;
+import es.in2.wallet.data.api.util.ApplicationUtils;
+import es.in2.wallet.data.api.util.DidMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;

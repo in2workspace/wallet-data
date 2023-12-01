@@ -1,14 +1,14 @@
 package es.in2.wallet.data.api.service.impl;
 
-import es.in2.wallet.data.api.model.UserAttribute;
-import es.in2.wallet.data.api.model.UserEntity;
-import es.in2.wallet.data.api.model.UserRequestDTO;
-import es.in2.wallet.data.api.model.VcBasicDataDTO;
+import es.in2.wallet.data.api.domain.UserAttribute;
+import es.in2.wallet.data.api.domain.UserEntity;
+import es.in2.wallet.data.api.domain.UserRequestDTO;
+import es.in2.wallet.data.api.domain.VcBasicDataDTO;
 import es.in2.wallet.data.api.service.BrokerAdapterCommunicationService;
 import es.in2.wallet.data.api.service.UserDataFacadeService;
 import es.in2.wallet.data.api.service.UserDataService;
 import es.in2.wallet.data.api.service.WalletCryptoCommunicationService;
-import es.in2.wallet.data.api.utils.DidMethods;
+import es.in2.wallet.data.api.util.DidMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
