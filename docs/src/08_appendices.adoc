@@ -1,0 +1,6 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-appendices]]
+== Appendices
+
+[[appendix-1]]

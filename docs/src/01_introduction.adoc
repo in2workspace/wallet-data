@@ -1,0 +1,28 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-introduction]]
+== Introduction
+
+# wallet-crypto
+Wallet Cryptographic Management System
+
+## Prerequisits
+- Java 17
+- Gradle 8.3
+- Srping 3.x
+- Docker
+- Walt.id SSI-Kit Library
+
+## Functionalities
+- [ ] Create did:key for a user
+- [ ] Create KeyPair related to did:key
+- [ ] Store did:key as a Key and PrivateKey as Value in a Vault (HashiCorp Vault)
+- [ ] Implements interface to connect the micro with Vault (Spring Vault)
+- [ ] Exposes an API with a CRUD for did:key
+
+## Additional Tasks
+- [ ] Remove old services which implements the did:key creation in the current WCA component
+
+## Relationship
+
+**Wallet WCA** --> |create did:key| **Wallet Crypto** --> |store <DID, PrivateKey>| **HashiCorp Vault**
