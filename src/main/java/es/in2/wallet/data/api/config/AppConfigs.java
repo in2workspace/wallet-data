@@ -3,6 +3,7 @@ package es.in2.wallet.data.api.config;
 import es.in2.wallet.data.api.config.properties.BrokerAdapterProperties;
 import es.in2.wallet.data.api.config.properties.OpenApiProperties;
 import es.in2.wallet.data.api.config.properties.WalletCryptoProperties;
+import es.in2.wallet.data.api.config.properties.WalletDrivingApplicationProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ public class AppConfigs {
     private final WalletCryptoProperties walletCryptoProperties;
     private final BrokerAdapterProperties brokerAdapterProperties;
     private final OpenApiProperties openApiProperties;
+    private final WalletDrivingApplicationProperties walletDrivingApplicationProperties;
 
     @PostConstruct
     void init() {
@@ -25,6 +27,7 @@ public class AppConfigs {
         log.info(prefixMessage, openApiProperties.info());
         log.info(prefixMessage, walletCryptoProperties);
         log.info(prefixMessage, brokerAdapterProperties);
+        log.info(prefixMessage, walletDrivingApplicationProperties);
     }
 
 }

@@ -9,6 +9,8 @@ broker-adapter:
   url: http://localhost:8090
 wallet-crypto:
   url: http://localhost:8081
+wallet-wda:
+  url: http://localhost:4200
 
 
 # Logging configuration
