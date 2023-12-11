@@ -1,0 +1,67 @@
+
+include::src/config.adoc[]
+
+= image:IN2-logo.png[IN2] IN2 Technical Document
+:description: IN2 <component> Technical Document
+:revnumber: 1.0.0 - draft 1
+:revdate: October 2023
+:revremark: EN
+// toc-title definition MUST follow document title without blank line!
+:toc-title: Table of Contents
+
+//additional style for arc42 help callouts
+ifdef::backend-html5[]
+++++
+<style>
+.arc42help {font-size:small; width: 14px; height: 16px; overflow: hidden; position: absolute; right: 0; padding: 2px 0 3px 2px;}
+.arc42help::before {content: "?";}
+.arc42help:hover {width:auto; height: auto; z-index: 100; padding: 10px;}
+.arc42help:hover::before {content: "";}
+@media print {
+	.arc42help {display:none;}
+}
+</style>
+++++
+endif::backend-html5[]
+
+****
+[NOTE]
+====
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor.
+====
+****
+
+:numbered:
+
+<<<
+// 1. Introduction
+include::src/01_introduction.adoc[]
+
+<<<
+// 2. Getting Started
+include::src/02_getting_started.adoc[]
+
+<<<
+// 3. Usage
+include::src/03_usage.adoc[]
+
+<<<
+// 4. Customization
+include::src/04_customization.adoc[]
+
+<<<
+// 5. Integration
+include::src/05_integration.adoc[]
+
+<<<
+// 6. Troubleshooting
+include::src/06_troubleshooting.adoc[]
+
+<<<
+// 7. Support and Resources
+include::src/07_support_and_resources.adoc[]
+
+<<<
+// 8. Appendices
+include::src/08_appendices.adoc[]
+
