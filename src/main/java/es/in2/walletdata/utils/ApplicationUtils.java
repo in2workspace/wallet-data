@@ -43,7 +43,7 @@ public class ApplicationUtils {
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .bodyValue(body)
                 .retrieve()
-                .onStatus(status -> status != HttpStatus.OK, clientResponse ->
+                .onStatus(status -> status != HttpStatus.CREATED, clientResponse ->
                         Mono.error(new RuntimeException("Error during post request:" + clientResponse.statusCode())))
                 .bodyToMono(String.class)
                 .doOnNext(response -> logCRUD(url, headers, body, response, "POST"));
