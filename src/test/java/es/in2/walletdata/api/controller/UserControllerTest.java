@@ -37,7 +37,7 @@ class UserControllerTest {
                 .bindToController(userController)
                 .build()
                 .post()
-                .uri("/api/v1/users")
+                .uri("/api/v2/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(userRequest)
                 .exchange()
@@ -60,7 +60,7 @@ class UserControllerTest {
                 .bindToController(userController)
                 .build()
                 .get()
-                .uri("/api/v1/users")
+                .uri("/api/v2/users")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 .exchange().expectStatus().isOk().expectBody(UserAttribute.class)
                 .value(userAttribute -> {
