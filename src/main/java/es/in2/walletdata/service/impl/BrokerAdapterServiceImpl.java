@@ -34,7 +34,7 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
     @Override
     public Mono<Void> storeUserInContextBroker(UserEntity userEntity) {
         // Building the URL for the POST request
-        String url = brokerAdapterProperties.url() + "/api/v1/publish";
+        String url = brokerAdapterProperties.url() + "/api/v2/entities";
 
         // Preparing request headers
         List<Map.Entry<String, String>> headers = new ArrayList<>();
@@ -55,7 +55,7 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
     @Override
     public Mono<UserEntity> getUserEntityFromContextBroker(String userId) {
         // Building the URL for the GET request
-        String url = brokerAdapterProperties.url() + "/api/v1/entities/urn:entities:userId:" + userId;
+        String url = brokerAdapterProperties.url() + "/api/v2/entities/urn:entities:userId:" + userId;
 
         // Using the ApplicationUtils class to perform the GET request
         return applicationUtils.getRequest(url, new ArrayList<>())
@@ -86,7 +86,7 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
 
     @Override
     public Mono<Void> updateUserEntityInContextBroker(UserEntity userEntity, String userId) {
-        String url = brokerAdapterProperties.url() + "/api/v1/update";
+        String url = brokerAdapterProperties.url() + "/api/v2/entities";
 
         String requestBody;
         try {

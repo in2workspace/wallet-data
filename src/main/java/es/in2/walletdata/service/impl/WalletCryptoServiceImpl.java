@@ -21,7 +21,7 @@ public class WalletCryptoServiceImpl implements WalletCryptoService {
     @Override
     public Mono<String> deletePrivateKeyAssociateToDID(String did) {
         // Build the URL for the DELETE request, including the DID as a query parameter
-        String deleteUrl = walletCryptoProperties.url() + "/api/v1/credentials?did=" + did;
+        String deleteUrl = walletCryptoProperties.url() + "/api/v2/credentials?did=" + did;
 
         // Perform the DELETE request using ApplicationUtils
         return applicationUtils.deleteRequest(deleteUrl, new ArrayList<>())

@@ -10,7 +10,7 @@ public final class ApiUtils {
     public static final String BEARER = "Bearer ";
     public static final String CREDENTIAL_SUBJECT = "credentialSubject";
 
-    public static final String GLOBAL_ENDPOINTS_API = "/api/v1/*";
+    public static final String GLOBAL_ENDPOINTS_API = "/api/v2/*";
     public static final String ALLOWED_METHODS = "*";
     // Private constructor to prevent instantiation
     private ApiUtils() {}

@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/dids")
+@RequestMapping("/api/v2/dids")
 @RequiredArgsConstructor
 public class DidController {
 

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v2/users")
 @Slf4j
 @RequiredArgsConstructor
 public class UserController {

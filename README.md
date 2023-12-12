@@ -30,7 +30,7 @@ Now that you have the necessary dependencies, you can configure the wallet-data 
 ```yaml
 wallet-data:
   container_name: wallet-data
-  image: in2kizuna/wallet-data:v1.0.0
+  image: in2kizuna/wallet-data:v2.0.0
   environment:
     SERVER_PORT: "8086"
     OPENAPI_SERVER_URL: "http://wallet-data:8086"
@@ -46,7 +46,7 @@ wallet-data:
     local_network:
 ```
 ## Project Status
-The project is currently at version **1.0.1** and is in a stable state.
+The project is currently at version **2.0.1** and is in a stable state.
 
 ## Contact
 For any inquiries or collaboration, you can contact us at:
