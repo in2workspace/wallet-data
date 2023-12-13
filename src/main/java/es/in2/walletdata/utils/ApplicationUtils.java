@@ -43,7 +43,7 @@ public class ApplicationUtils {
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .bodyValue(body)
                 .retrieve()
-                .onStatus(status -> status != HttpStatus.CREATED, clientResponse ->
+                .onStatus(status -> status != HttpStatus.CREATED && status != HttpStatus.NO_CONTENT, clientResponse ->
                         Mono.error(new RuntimeException("Error during post request:" + clientResponse.statusCode())))
                 .bodyToMono(String.class)
                 .doOnNext(response -> logCRUD(url, headers, body, response, "POST"));
@@ -65,7 +65,7 @@ public class ApplicationUtils {
                 .uri(url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .retrieve()
-                .onStatus(status -> status != HttpStatus.OK, clientResponse ->
+                .onStatus(status -> status != HttpStatus.OK && status != HttpStatus.NO_CONTENT, clientResponse ->
                         Mono.error(new RuntimeException("Error during delete request: " + clientResponse.statusCode())))
                 .bodyToMono(String.class)
                 .doOnNext(response -> logCRUD(url, headers, "", response, "DELETE"));
