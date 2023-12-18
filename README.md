@@ -1,4 +1,18 @@
-# WALLET-DATA
+<div style="text-align: center;">
+
+<h1>Wallet Data</h1>
+<span>by </span><a href="https://in2.es">in2.es</a>
+<p><p>
+
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_wallet-data&metric=security_rating)](https://sonarcloud.io/dashboard?id=in2workspace_wallet-data)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_wallet-data&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=in2workspace_wallet-data)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_wallet-data&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=in2workspace_wallet-data)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_wallet-data&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=in2workspace_wallet-data)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_wallet-data&metric=ncloc)](https://sonarcloud.io/dashboard?id=in2workspace_wallet-data)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_wallet-data&metric=alert_status)](https://sonarcloud.io/dashboard?id=in2workspace_wallet-data)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=in2workspace_wallet-data&metric=coverage)](https://sonarcloud.io/summary/new_code?id=in2workspace_wallet-data)
+
+</div>
 
 ## Introduction
 The Wallet-Data microservice is a pivotal component designed for storing and managing end-user information within a digital wallet environment. This service is distinguished by its modularity and its ability to interact seamlessly with key components in our ecosystem: the Broker-Adapter and the Wallet-Crypto module. The Broker-Adapter plays a vital role in persisting data in a context broker using NGSI-LD standards, while the Wallet-Crypto module ensures the secure handling of cryptographic elements associated with user data, particularly in the management and deletion of decentralized identifiers (DIDs) and their corresponding private keys.
