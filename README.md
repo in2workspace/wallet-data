@@ -43,21 +43,15 @@ Now that you have the necessary dependencies, you can configure the wallet-data 
 * Wallet-Crypto Configuration
 ```yaml
 wallet-data:
-  container_name: wallet-data
   image: in2kizuna/wallet-data:v2.0.0
   environment:
-    SERVER_PORT: "8086"
-    OPENAPI_SERVER_URL: "http://wallet-data:8086"
+    OPENAPI_SERVER_URL: "http://localhost:8086"
     BROKER-ADAPTER_URL: "http://broker-adapter:8080"
-    WALLET-CRYPTO_URL: "http://wallet-crypto:8081"
-  command:
-    - run
+    WALLET-CRYPTO_URL: "http://wallet-crypto:8080"
   ports:
-    - "8086:8086"
+    - "8086:8080"
   links:
     - broker-adapter
-  networks:
-    local_network:
 ```
 ## Project Status
 The project is currently at version **2.0.1** and is in a stable state.
