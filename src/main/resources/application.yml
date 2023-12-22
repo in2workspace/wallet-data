@@ -1,18 +1,18 @@
+# Spring Configuration
 spring:
   application:
-    name: WalletData
+    name: Wallet Data
+  main:
+    web-application-type: reactive
+
+# Server Configuration
 server:
-  port: 8086
-
-
-broker-adapter:
-  url: http://localhost:8090
-wallet-crypto:
-  url: http://localhost:8081
-
+  port: 8080
 
 # Logging configuration
 logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
   level:
     # Set the log level for the entire application
     root: INFO
@@ -44,17 +44,26 @@ springdoc:
 
 openapi:
   server:
-    url: http://localhost:8086
-    description: Spring Wallet Data API
+    url:
+    description:
   info:
-    title: IN2 Wallet data project
-    version: 0.0.1
-    termsOfService: $apiUrl/terms-of-service
+    title:
+    version:
+    termsOfService:
     license:
-      name: MIT License
-      url: https://choosealicense.com/licenses/mit/
+      name:
+      url:
     contact:
-      email: example@in2.es
-      name: IN2
-      url: https://in2.es
-    description: This API exposes endpoints to manage the IN2 Wallet data component.
+      email:
+      name:
+      url:
+    description:
+
+broker-adapter:
+  url:
+
+wallet-crypto:
+  url:
+
+wallet-wda:
+  url:

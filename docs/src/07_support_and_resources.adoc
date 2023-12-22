@@ -1,0 +1,4 @@
+ifndef::imagesdir[:imagesdir: ../images]
+
+[[section-support-and-resources]]
+== Support and Resources
