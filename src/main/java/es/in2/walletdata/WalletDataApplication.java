@@ -10,13 +10,14 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class DataApplication {
+public class WalletDataApplication {
 
 	private static final ObjectMapper OBJECT_MAPPER =
 			// sort alphabetically, to ensure same order when hashing.
 			JsonMapper.builder().configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true).build();
+
 	public static void main(String[] args) {
-		SpringApplication.run(DataApplication.class, args);
+		SpringApplication.run(WalletDataApplication.class, args);
 	}
 
 	@Bean
@@ -25,4 +26,5 @@ public class DataApplication {
 		// the thread-safe reader and writer instances from it
 		return OBJECT_MAPPER;
 	}
+
 }

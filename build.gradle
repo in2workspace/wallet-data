@@ -33,9 +33,16 @@ checkstyleTest {
 
 sonar {
 	properties {
+		property "sonar.projectName", "Wallet Data"
 		property "sonar.projectKey", "in2workspace_wallet-data"
 		property "sonar.organization", "in2workspace"
 		property "sonar.host.url", "https://sonarcloud.io"
+		property "sonar.coverage.exclusions",
+				"src/main/java/es/in2/walletdata/WalletDataApplication.java, " +
+				"src/main/java/es/in2/walletdata/configuration/**, " +
+				"src/main/java/es/in2/walletdata/domain/**, " +
+				"src/main/java/es/in2/walletdata/exception/**, " +
+				"src/main/java/es/in2/walletdata/utils/**"
 	}
 }
 
@@ -94,20 +101,21 @@ tasks.named('test') {
 	finalizedBy(tasks.jacocoTestReport)
 }
 
-jacocoTestReport {
+tasks.jacocoTestReport {
 	dependsOn(tasks.test)
 	reports {
-		xml.required = true
-		csv.required = false
+		xml.required.set(true)
+		csv.required.set(false)
 		html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
 	}
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: [
-					'**/DataApplication.class',
+					'**/walletdata/WalletDataApplication.class',
 					'**/configuration/**',
 					'**/domain/**',
-					'**/exception/**'
+					'**/exception/**',
+					'**/utils/**'
 			])
 		}))
 	}
