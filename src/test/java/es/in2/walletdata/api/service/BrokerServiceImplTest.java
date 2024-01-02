@@ -181,7 +181,7 @@ class BrokerServiceImplTest {
         try (MockedStatic<Utils> ignored = Mockito.mockStatic(Utils.class)){
             UserEntity mockUserEntity = UserEntity.builder().id("123").build();
             String userId = "123";
-            
+
             when(brokerProperties.url()).thenReturn("/url");
             ObjectWriter mockWriter = mock(ObjectWriter.class);
             when(objectMapper.writerWithDefaultPrettyPrinter()).thenReturn(mockWriter);
