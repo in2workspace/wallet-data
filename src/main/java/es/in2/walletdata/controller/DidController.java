@@ -2,8 +2,8 @@ package es.in2.walletdata.controller;
 
 import es.in2.walletdata.domain.DidRequest;
 import es.in2.walletdata.facade.UserDataFacadeService;
-import es.in2.walletdata.utils.ApplicationUtils;
-import es.in2.walletdata.utils.DidMethods;
+import es.in2.walletdata.utils.Utils;
+import es.in2.walletdata.domain.DidMethods;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class DidController {
 
     public Mono<Void> saveDid(@RequestBody DidRequest didRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("DidController.saveDid()");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader).flatMap(userId -> userDataFacadeService.saveDidByUserId(userId, didRequest.did(), DidMethods.fromStringValue(didRequest.didType()))).then();
+        return Utils.getUserIdFromToken(authorizationHeader).flatMap(userId -> userDataFacadeService.saveDidByUserId(userId, didRequest.did(), DidMethods.fromStringValue(didRequest.didType()))).then();
     }
 
     @GetMapping
@@ -43,7 +43,7 @@ public class DidController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<List<String>> getDidListByUserId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("DidController.getDidListByUserId");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader).flatMap(userDataFacadeService::getDidsByUserId);
+        return Utils.getUserIdFromToken(authorizationHeader).flatMap(userDataFacadeService::getDidsByUserId);
     }
 
 }

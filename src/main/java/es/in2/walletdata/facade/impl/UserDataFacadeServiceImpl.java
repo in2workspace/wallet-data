@@ -8,7 +8,7 @@ import es.in2.walletdata.facade.UserDataFacadeService;
 import es.in2.walletdata.service.BrokerAdapterService;
 import es.in2.walletdata.service.UserDataService;
 import es.in2.walletdata.service.WalletCryptoService;
-import es.in2.walletdata.utils.DidMethods;
+import es.in2.walletdata.domain.DidMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

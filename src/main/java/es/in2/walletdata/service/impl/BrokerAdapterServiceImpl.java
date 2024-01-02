@@ -3,12 +3,11 @@ package es.in2.walletdata.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import es.in2.walletdata.configuration.properties.BrokerAdapterProperties;
+import es.in2.walletdata.configuration.properties.BrokerProperties;
 import es.in2.walletdata.domain.UserEntity;
 import es.in2.walletdata.exception.FailedCommunicationException;
 import es.in2.walletdata.exception.NoSuchUserEntity;
 import es.in2.walletdata.service.BrokerAdapterService;
-import es.in2.walletdata.utils.ApplicationUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,23 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static es.in2.walletdata.utils.ApiUtils.CONTENT_TYPE;
-import static es.in2.walletdata.utils.ApiUtils.CONTENT_TYPE_APPLICATION_JSON;
+import static es.in2.walletdata.utils.Utils.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BrokerAdapterServiceImpl implements BrokerAdapterService {
-
-    private final ApplicationUtils applicationUtils;
     private final ObjectMapper objectMapper;
-    private final BrokerAdapterProperties brokerAdapterProperties;
+    private final BrokerProperties brokerProperties;
 
     @Override
     public Mono<Void> storeUserInContextBroker(UserEntity userEntity) {
-        // Building the URL for the POST request
-        String url = brokerAdapterProperties.url() + "/api/v2/entities";
-
         // Preparing request headers
         List<Map.Entry<String, String>> headers = new ArrayList<>();
         headers.add(new AbstractMap.SimpleEntry<>(CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON));
@@ -43,7 +36,7 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
         // Transforming the UserEntity to JSON String
         return Mono.fromCallable(() -> objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userEntity)).doOnNext(log::info) // Logging the request body
                 // Performing the POST request
-                .flatMap(requestBody -> applicationUtils.postRequest(url, headers, requestBody))
+                .flatMap(requestBody -> postRequest(brokerProperties.domain(),brokerProperties.url(), headers, requestBody))
                 // Handling errors, if any
                 .onErrorResume(e -> {
                     log.error("Error while creating UserEntity in ContextBroker for userId: {}", userEntity.id(), e);
@@ -55,10 +48,10 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
     @Override
     public Mono<UserEntity> getUserEntityFromContextBroker(String userId) {
         // Building the URL for the GET request
-        String url = brokerAdapterProperties.url() + "/api/v2/entities/urn:entities:userId:" + userId;
+        String url = brokerProperties.url() + "/urn:entities:userId:" + userId;
 
         // Using the ApplicationUtils class to perform the GET request
-        return applicationUtils.getRequest(url, new ArrayList<>())
+        return getRequest(brokerProperties.domain(), url, new ArrayList<>())
                 // Using flatMap to transform the response into a UserEntity
                 .flatMap(response -> {
                     try {
@@ -86,8 +79,7 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
 
     @Override
     public Mono<Void> updateUserEntityInContextBroker(UserEntity userEntity, String userId) {
-        String url = brokerAdapterProperties.url() + "/api/v2/entities";
-
+        String url = brokerProperties.url() + "/urn:entities:userId:" + userId + "/attrs";
         String requestBody;
         try {
             requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userEntity);
@@ -99,7 +91,7 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
         List<Map.Entry<String, String>> headers = new ArrayList<>();
         headers.add(new AbstractMap.SimpleEntry<>(CONTENT_TYPE, CONTENT_TYPE_APPLICATION_JSON));
 
-        return applicationUtils.patchRequest(url, headers, requestBody).then() // Ignore the response body and complete the Mono when the request is done
+        return patchRequest(brokerProperties.domain(),url, headers, requestBody).then() // Ignore the response body and complete the Mono when the request is done
                 .onErrorResume(e -> {
                     log.error("Error while updating user entity: " + userEntity, e);
                     return Mono.error(new FailedCommunicationException("Error while updating user entity:  " + userEntity));

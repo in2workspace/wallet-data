@@ -1,6 +1,6 @@
 package es.in2.walletdata.configuration;
 
-import es.in2.walletdata.configuration.properties.BrokerAdapterProperties;
+import es.in2.walletdata.configuration.properties.BrokerProperties;
 import es.in2.walletdata.configuration.properties.OpenApiProperties;
 import es.in2.walletdata.configuration.properties.WalletCryptoProperties;
 import es.in2.walletdata.configuration.properties.WalletDrivingApplicationProperties;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfigs {
 
     private final WalletCryptoProperties walletCryptoProperties;
-    private final BrokerAdapterProperties brokerAdapterProperties;
+    private final BrokerProperties brokerProperties;
     private final OpenApiProperties openApiProperties;
     private final WalletDrivingApplicationProperties walletDrivingApplicationProperties;
 
@@ -26,7 +26,7 @@ public class AppConfigs {
         log.info(prefixMessage, openApiProperties.server());
         log.info(prefixMessage, openApiProperties.info());
         log.info(prefixMessage, walletCryptoProperties);
-        log.info(prefixMessage, brokerAdapterProperties);
+        log.info(prefixMessage, brokerProperties);
         log.info(prefixMessage, walletDrivingApplicationProperties);
     }
 

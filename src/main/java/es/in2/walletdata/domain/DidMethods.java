@@ -1,4 +1,4 @@
-package es.in2.walletdata.utils;
+package es.in2.walletdata.domain;
 
 import lombok.Getter;
 
