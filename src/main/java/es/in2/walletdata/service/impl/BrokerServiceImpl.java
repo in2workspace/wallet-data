@@ -7,6 +7,7 @@ import es.in2.walletdata.configuration.properties.BrokerProperties;
 import es.in2.walletdata.domain.UserEntity;
 import es.in2.walletdata.exception.FailedCommunicationException;
 import es.in2.walletdata.exception.NoSuchUserEntity;
+import es.in2.walletdata.exception.ParseErrorException;
 import es.in2.walletdata.service.BrokerAdapterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import static es.in2.walletdata.utils.Utils.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BrokerAdapterServiceImpl implements BrokerAdapterService {
+public class BrokerServiceImpl implements BrokerAdapterService {
     private final ObjectMapper objectMapper;
     private final BrokerProperties brokerProperties;
 
@@ -64,14 +65,17 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
 
                         // Returning the UserEntity wrapped in a Mono
                         return Mono.just(userEntity);
-                    } catch (Exception e) {
+                    } catch (JsonProcessingException e) {
                         // Logging and returning an error Mono if deserialization fails
                         log.error("Error while deserializing UserEntity for userId: " + userId, e);
-                        return Mono.error(new FailedCommunicationException("Error deserializing UserEntity for userId: " + userId));
+                        return Mono.error(new ParseErrorException("Error deserializing UserEntity for userId: " + userId));
                     }
                 })
                 // Using onErrorResume to handle other errors that may occur during the GET request
                 .onErrorResume(e -> {
+                    if (e instanceof ParseErrorException) {
+                        return Mono.error(e); // Re-throwing ParseErrorException
+                    }
                     log.error("Error while fetching UserEntity from ContextBroker for userId: " + userId, e);
                     return Mono.error(new NoSuchUserEntity("Error retrieving UserEntity for userId: " + userId));
                 });
@@ -85,7 +89,7 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
             requestBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userEntity);
         } catch (JsonProcessingException e) {
             log.error("Error while updating UserEntity in ContextBroker for userId: " + userId, e);
-            return Mono.error(new FailedCommunicationException("Error updating UserEntity in ContextBroker for userId: " + userId));
+            return Mono.error(new ParseErrorException("Error updating UserEntity in ContextBroker for userId: " + userId));
         }
 
         List<Map.Entry<String, String>> headers = new ArrayList<>();
@@ -97,4 +101,5 @@ public class BrokerAdapterServiceImpl implements BrokerAdapterService {
                     return Mono.error(new FailedCommunicationException("Error while updating user entity:  " + userEntity));
                 }).doOnSuccess(aVoid -> log.info("UserEntity updated successfully for userId: {}", userId));
     }
+
 }
