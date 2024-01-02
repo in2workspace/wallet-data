@@ -1,7 +1,7 @@
 package es.in2.walletdata.service;
 
 import es.in2.walletdata.domain.*;
-import es.in2.walletdata.utils.DidMethods;
+import es.in2.walletdata.domain.DidMethods;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.1.0](https://github.com/in2workspace/wallet-data/releases/tag/v2.1.0) - unreleased
+### Added
+- Removed dependency on Broker-Adapter. The Wallet-Data now directly interacts with the Context Broker, functioning as its own Broker-Adapter.
+- Modified the WebClient to be static, enhancing the efficiency of interactions with the Context Broker.
+
+
 ## [v2.0.0](https://github.com/in2workspace/wallet-data/releases/tag/v2.0.0) - unreleased
 ### Added
 - Enabled centralized cross-origin resource sharing (CORS) to allow frontend applications to call the endpoints.

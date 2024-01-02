@@ -4,7 +4,6 @@ import es.in2.walletdata.domain.CredentialRequest;
 import es.in2.walletdata.domain.VCTypeList;
 import es.in2.walletdata.domain.VcBasicData;
 import es.in2.walletdata.facade.UserDataFacadeService;
-import es.in2.walletdata.utils.ApplicationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+
+import static es.in2.walletdata.utils.Utils.getUserIdFromToken;
 
 @RestController
 @RequestMapping("/api/v2/credentials")
@@ -36,7 +37,7 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<Void> saveVerifiableCredential(@RequestBody CredentialRequest credentialRequest, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("VerifiableCredentialController.saveVerifiableCredential");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+        return getUserIdFromToken(authorizationHeader)
                 .flatMap(userId -> userDataFacadeService.saveVerifiableCredentialByUserId(userId, credentialRequest.credential()))
                 .then();
     }
@@ -54,7 +55,7 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<List<VcBasicData>> getSelectableVCs(@RequestBody VCTypeList vcTypeList, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("VerifiableCredentialController.getSelectableVCs()");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+        return getUserIdFromToken(authorizationHeader)
                 .flatMap(userId -> userDataFacadeService.getVCsByVcTypeList(userId, vcTypeList.vcTypes()));
     }
 
@@ -70,7 +71,7 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<List<VcBasicData>> getVerifiableCredentialList(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("VerifiableCredentialController.getVerifiableCredential()");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+        return getUserIdFromToken(authorizationHeader)
                 .flatMap(userDataFacadeService::getUserVCs);
     }
 
@@ -87,7 +88,7 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<String> getSelectableVCs(@RequestParam String credentialId, @RequestParam String format, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("VerifiableCredentialController.getSelectableVCs()");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+        return getUserIdFromToken(authorizationHeader)
                 .flatMap(userId -> userDataFacadeService.getVerifiableCredentialByIdAndFormat(userId, credentialId, format));
     }
 
@@ -104,7 +105,7 @@ public class VerifiableCredentialController {
     @ApiResponse(responseCode = "500", description = "Internal server error.")
     public Mono<Void> deleteVerifiableCredential(@RequestParam String credentialId, @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("VerifiableCredentialController.deleteVerifiableCredential()");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+        return getUserIdFromToken(authorizationHeader)
                 .flatMap(userId -> userDataFacadeService.deleteVerifiableCredentialById(credentialId, userId))
                 .then();
     }

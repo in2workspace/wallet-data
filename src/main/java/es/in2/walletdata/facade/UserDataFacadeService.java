@@ -3,7 +3,7 @@ package es.in2.walletdata.facade;
 import es.in2.walletdata.domain.UserAttribute;
 import es.in2.walletdata.domain.UserRequest;
 import es.in2.walletdata.domain.VcBasicData;
-import es.in2.walletdata.utils.DidMethods;
+import es.in2.walletdata.domain.DidMethods;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

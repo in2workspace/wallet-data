@@ -10,7 +10,6 @@ import es.in2.walletdata.exception.NoSuchDidException;
 import es.in2.walletdata.exception.NoSuchVerifiableCredentialException;
 import es.in2.walletdata.exception.ParseErrorException;
 import es.in2.walletdata.service.UserDataService;
-import es.in2.walletdata.utils.DidMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ import reactor.core.publisher.Mono;
 import java.text.ParseException;
 import java.util.*;
 
-import static es.in2.walletdata.utils.ApiUtils.*;
+import static es.in2.walletdata.utils.Utils.*;
 
 @Slf4j
 @Service

@@ -8,15 +8,16 @@ import java.util.Optional;
 /**
  * Wallet Crypto Properties
  *
+ * @param domain - Wallet Crypto domain
  * @param url - Wallet Crypto URL
  */
 @ConfigurationProperties(prefix = "wallet-crypto")
-public record WalletCryptoProperties(String url) {
+public record WalletCryptoProperties(String domain,String url) {
 
     @ConstructorBinding
-    public WalletCryptoProperties(String url) {
+    public WalletCryptoProperties(String domain, String url) {
+        this.domain = Optional.ofNullable(domain).orElse("/api/v2/secrets");
         this.url = Optional.ofNullable(url).orElse("http://localhost:8081");
     }
 
 }
-

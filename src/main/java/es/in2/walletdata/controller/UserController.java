@@ -3,7 +3,7 @@ package es.in2.walletdata.controller;
 import es.in2.walletdata.domain.UserAttribute;
 import es.in2.walletdata.domain.UserRequest;
 import es.in2.walletdata.facade.UserDataFacadeService;
-import es.in2.walletdata.utils.ApplicationUtils;
+import es.in2.walletdata.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
@@ -51,7 +51,7 @@ public class UserController {
     public Mono<UserAttribute> getUserDataByUserId(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         log.debug("UserController.getUserDataByUserId");
         log.debug("VerifiableCredentialController.getSelectableVCs()");
-        return ApplicationUtils.getUserIdFromToken(authorizationHeader)
+        return Utils.getUserIdFromToken(authorizationHeader)
                 .flatMap(userDataFacadeService::getUserDataByUserId);
     }
 

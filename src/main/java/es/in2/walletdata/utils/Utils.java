@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -14,21 +13,27 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
-import static es.in2.walletdata.utils.ApiUtils.BEARER;
-import static es.in2.walletdata.utils.ApiUtils.INVALID_AUTH_HEADER;
-
-@Component
 @Slf4j
-public class ApplicationUtils {
-    private final WebClient webClient;
-
-    public ApplicationUtils(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.build();
+public class Utils {
+    private Utils(){
+        throw new IllegalStateException("Utility class");
     }
+    private static final WebClient webClient = WebClient.builder().build();
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+    public static final String VC_JWT = "vc_jwt";
+    public static final String VC_JSON = "vc_json";
+    public static final String PROPERTY_TYPE = "Property";
+    public static final String INVALID_AUTH_HEADER = "Invalid Authorization header";
+    public static final String BEARER = "Bearer ";
+    public static final String CREDENTIAL_SUBJECT = "credentialSubject";
 
-    public Mono<String> getRequest(String url, List<Map.Entry<String, String>> headers) {
+    public static final String GLOBAL_ENDPOINTS_API = "/api/v2/*";
+    public static final String ALLOWED_METHODS = "*";
+
+    public static Mono<String> getRequest(String domain, String url, List<Map.Entry<String, String>> headers) {
         return webClient.get()
-                .uri(url)
+                .uri(domain + url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .retrieve()
                 .onStatus(status -> status != HttpStatus.OK, clientResponse ->
@@ -37,9 +42,9 @@ public class ApplicationUtils {
                 .doOnNext(response -> logCRUD(url, headers, "", response, "GET"));
     }
 
-    public Mono<String> postRequest(String url, List<Map.Entry<String, String>> headers, String body) {
+    public static Mono<String> postRequest(String domain, String url, List<Map.Entry<String, String>> headers, String body) {
         return webClient.post()
-                .uri(url)
+                .uri(domain + url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .bodyValue(body)
                 .retrieve()
@@ -49,9 +54,9 @@ public class ApplicationUtils {
                 .doOnNext(response -> logCRUD(url, headers, body, response, "POST"));
     }
 
-    public Mono<String> patchRequest(String url, List<Map.Entry<String, String>> headers, String body) {
+    public static Mono<String> patchRequest(String domain, String url, List<Map.Entry<String, String>> headers, String body) {
         return webClient.patch()
-                .uri(url)
+                .uri(domain + url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .bodyValue(body)
                 .retrieve()
@@ -60,9 +65,9 @@ public class ApplicationUtils {
                 .bodyToMono(String.class)
                 .doOnNext(response -> logCRUD(url, headers, body, response, "PATCH"));
     }
-    public Mono<String> deleteRequest(String url, List<Map.Entry<String, String>> headers) {
+    public static Mono<String> deleteRequest(String domain,String url, List<Map.Entry<String, String>> headers) {
         return webClient.delete()
-                .uri(url)
+                .uri(domain + url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .retrieve()
                 .onStatus(status -> status != HttpStatus.OK && status != HttpStatus.NO_CONTENT, clientResponse ->
@@ -71,7 +76,7 @@ public class ApplicationUtils {
                 .doOnNext(response -> logCRUD(url, headers, "", response, "DELETE"));
     }
 
-    private void logCRUD(String url, List<Map.Entry<String, String>> headers, String requestBody, String responseBody, String method) {
+    public static void logCRUD(String url, List<Map.Entry<String, String>> headers, String requestBody, String responseBody, String method) {
         log.debug("********************************************************************************");
         log.debug(">>> METHOD: {}", method);
         log.debug(">>> URI: {}", url);

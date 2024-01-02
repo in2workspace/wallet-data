@@ -8,14 +8,14 @@ import java.util.Optional;
 /**
  * Wallet Driving Application Properties
  *
- * @param url
+ * @param domain
  */
 @ConfigurationProperties(prefix = "wallet-wda")
-public record WalletDrivingApplicationProperties(String url) {
+public record WalletDrivingApplicationProperties(String domain) {
 
     @ConstructorBinding
-    public WalletDrivingApplicationProperties(String url) {
-        this.url = Optional.ofNullable(url).orElse("http://localhost:8088");
+    public WalletDrivingApplicationProperties(String domain) {
+        this.domain = Optional.ofNullable(domain).orElse("http://localhost:8088");
     }
 
 }
