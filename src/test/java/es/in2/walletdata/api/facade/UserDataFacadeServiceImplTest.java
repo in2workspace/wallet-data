@@ -12,8 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import java.util.AbstractMap;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -44,6 +42,21 @@ class UserDataFacadeServiceImplTest {
 
     }
     @Test
+    void saveVerifiableCredentialByUserIdErrorTest(){
+        String userId = "123";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+        String vc = "credential";
+
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.saveVC(userEntity, vc)).thenReturn(Mono.just(userEntity));
+        when(brokerService.updateUserEntityInContextBroker(userEntity,userId)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.saveVerifiableCredentialByUserId(userId,vc))
+                .expectError(RuntimeException.class)
+                .verify();
+
+    }
+    @Test
     void deleteVerifiableCredentialByIdTest(){
         String userId = "123";
         UserEntity userEntity = UserEntity.builder().id("123").build();
@@ -62,6 +75,25 @@ class UserDataFacadeServiceImplTest {
     }
 
     @Test
+    void deleteVerifiableCredentialByIdErrorTest(){
+        String userId = "123";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+        String did = "did:key:123";
+        String vcId = "credential123";
+
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.extractDidFromVerifiableCredential(userEntity, vcId)).thenReturn(Mono.just(did));
+        when(walletCryptoService.deletePrivateKeyAssociateToDID(did)).thenReturn(Mono.just(did));
+        when(userDataService.deleteVerifiableCredential(userEntity,vcId,did)).thenReturn(Mono.just(userEntity));
+        when(brokerService.updateUserEntityInContextBroker(userEntity,userId)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.deleteVerifiableCredentialById(vcId,userId))
+                .expectError(RuntimeException.class)
+                .verify();
+
+    }
+
+    @Test
     void getUserVCsTest(){
         String userId = "123";
         UserEntity userEntity = UserEntity.builder().id("123").build();
@@ -75,6 +107,20 @@ class UserDataFacadeServiceImplTest {
                 .verifyComplete();
 
     }
+    @Test
+    void getUserVCsErrorTest(){
+        String userId = "123";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.getUserVCsInJson(userEntity)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.getUserVCs(userId))
+                .expectError(RuntimeException.class)
+                .verify();
+
+    }
+
 
     @Test
     void getVCsByVcTypeListTest(){
@@ -93,6 +139,21 @@ class UserDataFacadeServiceImplTest {
     }
 
     @Test
+    void getVCsByVcTypeListErrorTest(){
+        String userId = "123";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+        List<String> vcTypeList = List.of("LEARCredential");
+
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.getSelectableVCsByVcTypeList(vcTypeList,userEntity)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.getVCsByVcTypeList(userId,vcTypeList))
+                .expectError(RuntimeException.class)
+                .verify();
+
+    }
+
+    @Test
     void saveDidByUserIdTest(){
         String userId = "123";
         UserEntity userEntity = UserEntity.builder().id("123").build();
@@ -103,6 +164,20 @@ class UserDataFacadeServiceImplTest {
 
         StepVerifier.create(userDataFacadeService.saveDidByUserId(userId,did,DidMethods.KEY))
                 .verifyComplete();
+
+    }
+    @Test
+    void saveDidByUserIdErrorTest(){
+        String userId = "123";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+        String did = "did:key:123";
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.saveDid(userEntity, did, DidMethods.KEY)).thenReturn(Mono.just(userEntity));
+        when(brokerService.updateUserEntityInContextBroker(userEntity,userId)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.saveDidByUserId(userId,did,DidMethods.KEY))
+                .expectError(RuntimeException.class)
+                .verify();
 
     }
 
@@ -119,6 +194,18 @@ class UserDataFacadeServiceImplTest {
                 .verifyComplete();
 
     }
+    @Test
+    void getDidsByUserIdErrorTest(){
+        String userId = "123";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.getDidsByUserEntity(userEntity)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.getDidsByUserId(userId))
+                .expectError(RuntimeException.class)
+                .verify();
+
+    }
 
     @Test
     void createUserEntityTest(){
@@ -128,6 +215,17 @@ class UserDataFacadeServiceImplTest {
 
         StepVerifier.create(userDataFacadeService.createUserEntity(userRequest))
                 .verifyComplete();
+
+    }
+    @Test
+    void createUserEntityErrorTest(){
+        UserRequest userRequest = UserRequest.builder().userId("1234").build();
+
+        when(userDataService.createUserEntity(userRequest)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.createUserEntity(userRequest))
+                .expectError(RuntimeException.class)
+                .verify();
 
     }
 
@@ -144,6 +242,20 @@ class UserDataFacadeServiceImplTest {
                 .verifyComplete();
 
     }
+
+    @Test
+    void getUserDataByUserIdErrorTest(){
+        String userId = "123";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.getUserDataFromUserEntity(userEntity)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.getUserDataByUserId(userId))
+                .expectError(RuntimeException.class)
+                .verify();
+
+    }
+
     @Test
     void getVerifiableCredentialByIdAndFormatTest(){
         String userId = "123";
@@ -161,5 +273,20 @@ class UserDataFacadeServiceImplTest {
 
     }
 
+    @Test
+    void getVerifiableCredentialByIdAndFormatErrorTest(){
+        String userId = "123";
+        String credentialId = "321";
+        String format = "vc_json";
+        UserEntity userEntity = UserEntity.builder().id("123").build();
+
+        when(brokerService.getUserEntityFromContextBroker(userId)).thenReturn(Mono.just(userEntity));
+        when(userDataService.getVerifiableCredentialByIdAndFormat(userEntity,credentialId,format)).thenReturn(Mono.error(new RuntimeException()));
+
+        StepVerifier.create(userDataFacadeService.getVerifiableCredentialByIdAndFormat(userId,credentialId,format))
+                .expectError(RuntimeException.class)
+                .verify();
+
+    }
 
 }
