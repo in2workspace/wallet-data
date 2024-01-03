@@ -18,7 +18,6 @@ public class Utils {
     private Utils(){
         throw new IllegalStateException("Utility class");
     }
-    private static final WebClient webClient = WebClient.builder().build();
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
     public static final String VC_JWT = "vc_jwt";
@@ -31,9 +30,21 @@ public class Utils {
     public static final String GLOBAL_ENDPOINTS_API = "/api/v2/*";
     public static final String ALLOWED_METHODS = "*";
 
+    // Choosing a factory method to instantiate WebClient with specific base URLs enhances flexibility,
+    // preserves immutability and thread safety, prevents shared state issues, and eases code maintenance and scalability.
+    // This approach is particularly beneficial in environments with variable base URLs,
+    // ensuring a more robust and adaptable software design.
+    private static WebClient createWebClient(String baseUrl) {
+        //Configure the WebClient as you need
+        return WebClient.builder()
+                .baseUrl(baseUrl)
+                .build();
+    }
     public static Mono<String> getRequest(String domain, String url, List<Map.Entry<String, String>> headers) {
-        return webClient.get()
-                .uri(domain + url)
+        WebClient webClient = createWebClient(domain);
+        return webClient
+                .get()
+                .uri(url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .retrieve()
                 .onStatus(status -> status != HttpStatus.OK, clientResponse ->
@@ -43,8 +54,10 @@ public class Utils {
     }
 
     public static Mono<String> postRequest(String domain, String url, List<Map.Entry<String, String>> headers, String body) {
-        return webClient.post()
-                .uri(domain + url)
+        WebClient webClient = createWebClient(domain);
+        return webClient
+                .post()
+                .uri(url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .bodyValue(body)
                 .retrieve()
@@ -55,8 +68,10 @@ public class Utils {
     }
 
     public static Mono<String> patchRequest(String domain, String url, List<Map.Entry<String, String>> headers, String body) {
-        return webClient.patch()
-                .uri(domain + url)
+        WebClient webClient = createWebClient(domain);
+        return webClient
+                .patch()
+                .uri(url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .bodyValue(body)
                 .retrieve()
@@ -66,8 +81,9 @@ public class Utils {
                 .doOnNext(response -> logCRUD(url, headers, body, response, "PATCH"));
     }
     public static Mono<String> deleteRequest(String domain,String url, List<Map.Entry<String, String>> headers) {
+        WebClient webClient = createWebClient(domain);
         return webClient.delete()
-                .uri(domain + url)
+                .uri(url)
                 .headers(httpHeaders -> headers.forEach(entry -> httpHeaders.add(entry.getKey(), entry.getValue())))
                 .retrieve()
                 .onStatus(status -> status != HttpStatus.OK && status != HttpStatus.NO_CONTENT, clientResponse ->
