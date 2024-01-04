@@ -60,7 +60,7 @@ wallet-data:
     - "8086:8080"
 ```
 ## Project Status
-The project is currently at version **2.1.0** and is in a stable state.
+The project is currently at version **2.0.0** and is in a stable state.
 
 ## Contact
 For any inquiries or collaboration, you can contact us at:
