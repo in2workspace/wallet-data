@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Checkstyle for code quality.
 - Added support for GitHub Actions for CI/CD.
 - Added SonarCloud for code quality.
+- Removed dependency on Broker-Adapter. The Wallet-Data now directly interacts with the Context Broker, functioning as its own Broker-Adapter.
+- Modified the WebClient to be static, enhancing the efficiency of interactions with the Context Broker.
 
 ## [v1.0.0](https://github.com/in2workspace/wallet-data/releases/tag/v1.0.0) - 2023-12-4
 ### Added

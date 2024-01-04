@@ -6,7 +6,7 @@ import es.in2.walletdata.domain.UserAttribute;
 import es.in2.walletdata.domain.UserEntity;
 import es.in2.walletdata.domain.UserRequest;
 import es.in2.walletdata.service.impl.UserDataServiceImpl;
-import es.in2.walletdata.utils.DidMethods;
+import es.in2.walletdata.domain.DidMethods;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

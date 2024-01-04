@@ -59,11 +59,13 @@ openapi:
       url:
     description:
 
-broker-adapter:
+broker:
+  domain:
   url:
 
 wallet-crypto:
+  domain:
   url:
 
 wallet-wda:
-  url:
+  domain:
