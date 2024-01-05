@@ -1,0 +1,77 @@
+services:
+
+#  rabbitmq:
+#    image: rabbitmq:management
+#    # Change it to match with your architecture
+#    platform: linux/arm64/v8
+#    restart: no
+#    environment:
+#      RABBITMQ_DEFAULT_USER: guest
+#      RABBITMQ_DEFAULT_PASS: guest
+#      RABBITMQ_DEFAULT_VHOST: 'vhost'
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    volumes:
+#      - rabbitmq-data:/var/lib/rabbitmq/
+#      - rabbitmq-log:/var/log/rabbitmq
+
+  postgis:
+    image: postgis/postgis
+    # Change it to match with your architecture
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ngb
+      POSTGRES_PASSWORD: ngb
+      POSTGRES_DB: ngb
+
+  scorpio:
+    image: scorpiobroker/all-in-one-runner:java-latest
+    # Change it to match with your architecture
+    platform: linux/amd64
+    environment:
+      DBHOST: postgis
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgis
+
+  wallet-data:
+    image: wallet-data:latest
+    environment:
+      # Logging Configuration
+      LOGGING_LEVEL_ES_IN2_WALLET_DATA: "DEBUG"
+      # OpenAPI Configuration
+      OPENAPI_SERVER_URL: "https://localhost:8086"
+      OPENAPI_SERVER_DESCRIPTION: "Blockchain Connector Test Server"
+      OPENAPI_INFO_TITLE: "Blockchain Connector"
+      OPENAPI_INFO_DESCRIPTION: "Blockchain Connector Component"
+      OPENAPI_INFO_VERSION: "2.0.0-SNAPSHOT"
+      OPENAPI_INFO_TERMS_OF_SERVICE: "https://example.com/terms"
+      OPENAPI_INFO_LICENSE_NAME: "Apache 2.0"
+      OPENAPI_INFO_LICENSE_URL: "https://www.apache.org/licenses/LICENSE-2.0.html"
+      OPENAPI_INFO_CONTACT_NAME: "IN2, Ingeniería de la Información"
+      OPENAPI_INFO_CONTACT_URL: "https://in2.es"
+      OPENAPI_INFO_CONTACT_EMAIL: "contacto@in2.es"
+      # Wallet Router Configuration
+      BROKER_DOMAIN: "http://scorpio:9090"
+      BROKER_URL: "/ngsi-ld/v1/entities"
+      WALLET-CRYPTO_DOMAIN: "http://wallet-crypto:8080"
+      WALLET-CRYPTO_URL: "/api/v2/secrets"
+      WALLET-WDA_DOMAIN: "http://localhost:4200"
+      # RabbitMQ Configuration
+      SPRING_RABBITMQ_HOST: "rabbitmq"
+      SPRING_RABBITMQ_PORT: "5672"
+      SPRING_RABBITMQ_USERNAME: "guest"
+      SPRING_RABBITMQ_PASSWORD: "guest"
+      SPRING_RABBITMQ_VIRTUAL-HOST: "vhost"
+    ports:
+      - "8086:8080"
+    depends_on:
+      - scorpio
+
+#volumes:
+#    rabbitmq-data:
+#    rabbitmq-log:

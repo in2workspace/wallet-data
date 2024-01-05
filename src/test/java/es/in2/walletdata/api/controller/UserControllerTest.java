@@ -2,6 +2,7 @@ package es.in2.walletdata.api.controller;
 
 import es.in2.walletdata.controller.UserController;
 import es.in2.walletdata.domain.UserAttribute;
+import es.in2.walletdata.domain.UserRegistrationRequestEvent;
 import es.in2.walletdata.domain.UserRequest;
 import es.in2.walletdata.facade.UserDataFacadeService;
 import org.junit.jupiter.api.Test;
@@ -26,24 +27,29 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    @Test
-    void testRegisterUser() {
-        // Arrange
-        UserRequest userRequest = UserRequest.builder().username("John Doe").userId("123").email("jhon@example.com").build();
-        // Mock
-        when(userDataFacadeService.createUserEntity(userRequest)).thenReturn(Mono.empty());
-        // Act & Assert
-        WebTestClient
-                .bindToController(userController)
-                .build()
-                .post()
-                .uri("/api/v2/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(userRequest)
-                .exchange()
-                .expectStatus()
-                .isCreated();
-    }
+    // todo: delete if finally we delete this method
+//    @Test
+//    void testRegisterUser() {
+//        // Arrange
+//        UserRegistrationRequestEvent userRegistrationRequestEvent = UserRegistrationRequestEvent.builder()
+//                .username("John Doe")
+//                .id("123")
+//                .email("jhon@example.com")
+//                .build();
+//        // Mock
+//        when(userDataFacadeService.createUserEntity(userRegistrationRequestEvent)).thenReturn(Mono.empty());
+//        // Act & Assert
+//        WebTestClient
+//                .bindToController(userController)
+//                .build()
+//                .post()
+//                .uri("/api/v2/users")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .bodyValue(userRegistrationRequestEvent)
+//                .exchange()
+//                .expectStatus()
+//                .isCreated();
+//    }
 
     @Test
     void testGetUserDataByUserId() {

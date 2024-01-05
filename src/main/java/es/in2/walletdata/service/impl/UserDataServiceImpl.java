@@ -349,14 +349,15 @@ public class UserDataServiceImpl implements UserDataService {
     }
 
     @Override
-    public Mono<UserEntity> createUserEntity(UserRequest userRequest) {
+    public Mono<UserEntity> createUserEntity(UserRegistrationRequestEvent userRegistrationRequestEvent) {
         // Create the UserAttribute from the provided data
-        UserAttribute userAttribute = new UserAttribute(userRequest.username(), userRequest.email());
+        UserAttribute userAttribute = new UserAttribute(userRegistrationRequestEvent.username(),
+                userRegistrationRequestEvent.email());
         EntityAttribute<UserAttribute> userData = new EntityAttribute<>(PROPERTY_TYPE, userAttribute);
 
         // Construct the UserEntity
         UserEntity userEntity = new UserEntity(
-                "urn:entities:userId:" + userRequest.userId(),
+                "urn:entities:user:" + userRegistrationRequestEvent.id(),
                 "userEntity",
                 userData,
                 new EntityAttribute<>(PROPERTY_TYPE, new ArrayList<>()),
@@ -364,7 +365,7 @@ public class UserDataServiceImpl implements UserDataService {
         );
 
         // Log the creation of the entity
-        log.debug("UserEntity created for: {}", userRequest.userId());
+        log.debug("UserEntity created for: {}", userRegistrationRequestEvent.id());
 
         // Return the created UserEntity wrapped in a Mono
         return Mono.just(userEntity);

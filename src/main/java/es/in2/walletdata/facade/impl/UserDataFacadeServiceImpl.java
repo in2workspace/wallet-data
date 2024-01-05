@@ -1,16 +1,13 @@
 package es.in2.walletdata.facade.impl;
 
-import es.in2.walletdata.domain.UserAttribute;
-import es.in2.walletdata.domain.UserEntity;
-import es.in2.walletdata.domain.UserRequest;
-import es.in2.walletdata.domain.VcBasicData;
+import es.in2.walletdata.domain.*;
 import es.in2.walletdata.facade.UserDataFacadeService;
 import es.in2.walletdata.service.BrokerService;
 import es.in2.walletdata.service.UserDataService;
 import es.in2.walletdata.service.WalletCryptoService;
-import es.in2.walletdata.domain.DidMethods;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -105,13 +102,17 @@ public class UserDataFacadeServiceImpl implements UserDataFacadeService {
                 });
     }
 
+    @RabbitListener(queues = {"q.user-registration"})
     @Override
-    public Mono<Void> createUserEntity(UserRequest userRequest) {
+    public Mono<Void> createUserEntity(UserRegistrationRequestEvent userRegistrationRequestEvent) {
         // Create the UserEntity using the provided DTO
-        return userDataService.createUserEntity(userRequest).flatMap(brokerService::storeUserInContextBroker).doOnSuccess(aVoid -> log.info("UserEntity successfully persisted for: {}", userRequest.userId())).onErrorResume(e -> {
-            log.error("Error while persisting UserEntity for: {}", userRequest.userId(), e);
-            return Mono.error(e); // Propagate the error
-        });
+        return userDataService.createUserEntity(userRegistrationRequestEvent)
+                .flatMap(brokerService::storeUserInContextBroker)
+                .doOnSuccess(aVoid -> log.info("UserEntity successfully persisted for: {}", userRegistrationRequestEvent.id()))
+                .onErrorResume(e -> {
+                    log.error("Error while persisting UserEntity for: {}", userRegistrationRequestEvent.id(), e);
+                    return Mono.error(e); // Propagate the error
+                });
     }
 
     @Override

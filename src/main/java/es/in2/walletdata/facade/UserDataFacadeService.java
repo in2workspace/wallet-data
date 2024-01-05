@@ -1,9 +1,6 @@
 package es.in2.walletdata.facade;
 
-import es.in2.walletdata.domain.UserAttribute;
-import es.in2.walletdata.domain.UserRequest;
-import es.in2.walletdata.domain.VcBasicData;
-import es.in2.walletdata.domain.DidMethods;
+import es.in2.walletdata.domain.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -21,7 +18,7 @@ public interface UserDataFacadeService {
 
     Mono<List<String>> getDidsByUserId(String userId);
 
-    Mono<Void> createUserEntity(UserRequest userRequest);
+    Mono<Void> createUserEntity(UserRegistrationRequestEvent userRegistrationRequestEvent);
 
     Mono<UserAttribute> getUserDataByUserId(String userId);
 

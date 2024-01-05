@@ -30,6 +30,6 @@ public interface UserDataService {
 
     Mono<UserAttribute> getUserDataFromUserEntity(UserEntity userEntity);
 
-    Mono<UserEntity> createUserEntity(UserRequest userRequest);
+    Mono<UserEntity> createUserEntity(UserRegistrationRequestEvent userRegistrationRequestEvent);
 
 }

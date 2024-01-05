@@ -2,11 +2,8 @@ package es.in2.walletdata.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import es.in2.walletdata.domain.UserAttribute;
-import es.in2.walletdata.domain.UserEntity;
-import es.in2.walletdata.domain.UserRequest;
+import es.in2.walletdata.domain.*;
 import es.in2.walletdata.service.impl.UserDataServiceImpl;
-import es.in2.walletdata.domain.DidMethods;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -432,18 +429,24 @@ class UserDataServiceImplTest {
 
     @Test
     void testRegisterUserInContextBroker() {
-        UserRequest userRequest = UserRequest.builder()
-                .userId("1234")
+        UserRegistrationRequestEvent userRegistrationRequestEvent = UserRegistrationRequestEvent.builder()
+                .correlationId("1234")
+                .id("1234")
                 .username("Manuel")
                 .email("manuel@gmail.com")
                 .build();
+//        UserRequest userRequest = UserRequest.builder()
+//                .userId("1234")
+//                .username("Manuel")
+//                .email("manuel@gmail.com")
+//                .build();
 
 
         // Executing the method under test
-        StepVerifier.create(userDataServiceImpl.createUserEntity(userRequest))
+        StepVerifier.create(userDataServiceImpl.createUserEntity(userRegistrationRequestEvent))
                 .assertNext(userEntity -> {
                     assertNotNull(userEntity, "User Entity should not be null");
-                    assertEquals(userEntity.userData().value().username(), userRequest.username(), "User name mismatch");
+                    assertEquals(userEntity.userData().value().username(), userRegistrationRequestEvent.username(), "User name mismatch");
                 })
                 .expectComplete()
                 .verify();

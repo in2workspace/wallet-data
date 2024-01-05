@@ -209,21 +209,23 @@ class UserDataFacadeServiceImplTest {
 
     @Test
     void createUserEntityTest(){
-        UserRequest userRequest = UserRequest.builder().userId("1234").build();
+        UserRegistrationRequestEvent userRegistrationRequestEvent = UserRegistrationRequestEvent.builder().id("123").build();
+//        UserRequest userRequest = UserRequest.builder().userId("1234").build();
 
-        when(userDataService.createUserEntity(userRequest)).thenReturn(Mono.empty());
+        when(userDataService.createUserEntity(userRegistrationRequestEvent)).thenReturn(Mono.empty());
 
-        StepVerifier.create(userDataFacadeService.createUserEntity(userRequest))
+        StepVerifier.create(userDataFacadeService.createUserEntity(userRegistrationRequestEvent))
                 .verifyComplete();
 
     }
     @Test
     void createUserEntityErrorTest(){
-        UserRequest userRequest = UserRequest.builder().userId("1234").build();
+        UserRegistrationRequestEvent userRegistrationRequestEvent = UserRegistrationRequestEvent.builder().id("123").build();
+//        UserRequest userRequest = UserRequest.builder().userId("1234").build();
 
-        when(userDataService.createUserEntity(userRequest)).thenReturn(Mono.error(new RuntimeException()));
+        when(userDataService.createUserEntity(userRegistrationRequestEvent)).thenReturn(Mono.error(new RuntimeException()));
 
-        StepVerifier.create(userDataFacadeService.createUserEntity(userRequest))
+        StepVerifier.create(userDataFacadeService.createUserEntity(userRegistrationRequestEvent))
                 .expectError(RuntimeException.class)
                 .verify();
 

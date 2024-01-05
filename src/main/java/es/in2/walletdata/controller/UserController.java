@@ -23,20 +23,21 @@ public class UserController {
 
     private final UserDataFacadeService userDataFacadeService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(
-            summary = "User Register",
-            description = "User registered correctly",
-            tags = {"User Management"}
-    )
-    @ApiResponse(responseCode = "201", description = "User created successfully.")
-    @ApiResponse(responseCode = "400", description = "Invalid request.")
-    @ApiResponse(responseCode = "500", description = "Internal server error.")
-    public Mono<Void> registerUser(@RequestBody @Valid UserRequest appUserRequest) {
-        log.debug("UserController.registerUser()");
-        return userDataFacadeService.createUserEntity(appUserRequest);
-    }
+    // todo: remove this endpoint because we should work with RabbitMQ events
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @Operation(
+//            summary = "User Register",
+//            description = "User registered correctly",
+//            tags = {"User Management"}
+//    )
+//    @ApiResponse(responseCode = "201", description = "User created successfully.")
+//    @ApiResponse(responseCode = "400", description = "Invalid request.")
+//    @ApiResponse(responseCode = "500", description = "Internal server error.")
+//    public Mono<Void> registerUser(@RequestBody @Valid UserRequest appUserRequest) {
+//        log.debug("UserController.registerUser()");
+//        return userDataFacadeService.createUserEntity(appUserRequest);
+//    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

@@ -79,8 +79,10 @@ dependencies {
 	// Documentation
 	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.2.0'
 
+	// Message broker
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
 	// Logback
-	implementation 'ch.qos.logback:logback-classic:1.4.11'
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
 	// Prometheus

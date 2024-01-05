@@ -1,9 +1,6 @@
 package es.in2.walletdata.configuration;
 
-import es.in2.walletdata.configuration.properties.BrokerProperties;
-import es.in2.walletdata.configuration.properties.OpenApiProperties;
-import es.in2.walletdata.configuration.properties.WalletCryptoProperties;
-import es.in2.walletdata.configuration.properties.WalletDrivingApplicationProperties;
+import es.in2.walletdata.configuration.properties.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +15,23 @@ public class AppConfigs {
     private final BrokerProperties brokerProperties;
     private final OpenApiProperties openApiProperties;
     private final WalletDrivingApplicationProperties walletDrivingApplicationProperties;
+    private final RabbitMQProperties rabbitMQProperties;
 
     @PostConstruct
     void init() {
         String prefixMessage = " > {}";
-        log.info("Configurations uploaded: ");
-        log.info(prefixMessage, openApiProperties.server());
-        log.info(prefixMessage, openApiProperties.info());
-        log.info(prefixMessage, walletCryptoProperties);
-        log.info(prefixMessage, brokerProperties);
-        log.info(prefixMessage, walletDrivingApplicationProperties);
+        log.debug("Configurations uploaded: ");
+        log.debug("OpenAPI properties: ");
+        log.debug(prefixMessage, openApiProperties.server());
+        log.debug(prefixMessage, openApiProperties.info());
+        log.debug("Wallet Crypto properties: ");
+        log.debug(prefixMessage, walletCryptoProperties);
+        log.debug("Broker properties: ");
+        log.debug(prefixMessage, brokerProperties);
+        log.debug("Wallet Driving Application properties: ");
+        log.debug(prefixMessage, walletDrivingApplicationProperties);
+        log.debug("RabbitMQ properties: ");
+        log.debug(prefixMessage, rabbitMQProperties);
     }
 
 }
